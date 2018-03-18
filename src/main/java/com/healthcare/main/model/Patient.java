@@ -9,6 +9,8 @@ public class Patient
     private String Sex;
     private String PhoneNumber;
 
+    public Patient(){}
+
     public Patient(Long patientID, String firstName, String lastName, int age, String sex, String phoneNumber) {
         PatientID = patientID;
         FirstName = firstName;
