@@ -4,18 +4,22 @@ package com.healthcare.main.model;
 public class Doctor
 {
     private Long DoctorID;
-    private Long UserID;
     private String FirstName;
     private String LastName;
+    private int Age;
+    private String Sex;
+    private String PhoneNumber;
     private String Specialization;
 
     public Doctor() {}
 
-    public Doctor(Long doctorID, Long userID, String firstName, String lastName, String specialization) {
+    public Doctor(Long doctorID, String firstName, String lastName, int age, String sex, String phoneNumber, String specialization) {
         DoctorID = doctorID;
-        UserID = userID;
         FirstName = firstName;
         LastName = lastName;
+        Age = age;
+        Sex = sex;
+        PhoneNumber = phoneNumber;
         Specialization = specialization;
     }
 
@@ -25,14 +29,6 @@ public class Doctor
 
     public void setDoctorID(Long doctorID) {
         DoctorID = doctorID;
-    }
-
-    public Long getUserID() {
-        return UserID;
-    }
-
-    public void setUserID(Long userID) {
-        UserID = userID;
     }
 
     public String getFirstName() {
@@ -57,5 +53,29 @@ public class Doctor
 
     public void setSpecialization(String specialization) {
         Specialization = specialization;
+    }
+
+    public int getAge() {
+        return Age;
+    }
+
+    public void setAge(int age) {
+        Age = age;
+    }
+
+    public String getSex() {
+        return Sex;
+    }
+
+    public void setSex(String sex) {
+        Sex = sex;
+    }
+
+    public String getPhoneNumber() {
+        return PhoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        PhoneNumber = phoneNumber;
     }
 }
