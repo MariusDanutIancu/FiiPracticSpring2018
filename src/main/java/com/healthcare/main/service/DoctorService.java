@@ -7,13 +7,13 @@ import java.util.List;
 public interface DoctorService
 {
     Doctor getDoctor(Long id);
-    Doctor getAllDoctors();
+    List<Doctor> getAllDoctors();
 
     Doctor saveDoctor(Doctor doctor);
 
-    Doctor updateDoctor(Long id);
-    Doctor updateDoctors(List<Doctor> doctorList);
+    Doctor updateDoctor(Doctor doctor);
+    List<Doctor> updateDoctors(List<Doctor> doctorList);
 
-    Doctor deleteDoctor(Long id);
-    Doctor deleteAllDoctors();
+    Boolean deleteDoctor(Long id);
+    Boolean deleteAllDoctors();
 }
