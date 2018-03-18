@@ -11,12 +11,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value="/api/0.1/doctors")
-public class DoctorControler
+public class DoctorController
 {
     private DoctorService doctorService;
 
     @Autowired
-    public DoctorControler(DoctorService doctorService) {
+    public DoctorController(DoctorService doctorService) {
         this.doctorService = doctorService;
     }
 
