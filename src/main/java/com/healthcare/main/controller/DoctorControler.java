@@ -45,12 +45,12 @@ public class DoctorControler
         return  doctorService.updateDoctor(doctor);
     }
 
-    @PutMapping
-    public ResponseEntity<Object> updateDoctors()
-    {
-        // doctorService.updateDoctors(doctor);
-        return new ResponseEntity<>(null, HttpStatus.NOT_IMPLEMENTED);
-    }
+//    @PutMapping
+//    public ResponseEntity<Object> updateDoctors()
+//    {
+//        // doctorService.updateDoctors(doctor);
+//        return new ResponseEntity<>(null, HttpStatus.NOT_IMPLEMENTED);
+//    }
 
     @DeleteMapping(value="/{id}")
     public Boolean deleteDoctor(@PathVariable Long id)
