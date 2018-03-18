@@ -39,7 +39,7 @@ public class DoctorController
         return doctor;
     }
 
-    @PutMapping
+    @PutMapping(value="/{id}")
     public Doctor updateDoctor(@RequestBody Doctor doctor)
     {
         return  doctorService.updateDoctor(doctor);
