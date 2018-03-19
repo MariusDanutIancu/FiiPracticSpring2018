@@ -54,7 +54,8 @@ public class PatientController
     @DeleteMapping(value="/{id}")
     public Boolean deletePatient(@PathVariable Long id)
     {
-        return patientService.deletePatient(id);
+        Patient patient = patientService.getPatient(id);
+        return patientService.deletePatient(patient);
     }
 
     @DeleteMapping
