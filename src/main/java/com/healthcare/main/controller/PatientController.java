@@ -2,6 +2,7 @@ package com.healthcare.main.controller;
 
 import com.healthcare.main.exception.BadRequestException;
 import com.healthcare.main.exception.NotFoundException;
+import com.healthcare.main.mapper.ObjectMapper;
 import com.healthcare.main.model.Doctor;
 import com.healthcare.main.model.Patient;
 import com.healthcare.main.service.PatientService;
@@ -63,6 +64,7 @@ public class PatientController
             throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
         }
 
+        ObjectMapper.map2PatientDb(patientDb, patient);
         return patientService.updatePatient(patientDb);
     }
 
