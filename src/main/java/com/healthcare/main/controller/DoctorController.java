@@ -3,8 +3,6 @@ package com.healthcare.main.controller;
 import com.healthcare.main.model.Doctor;
 import com.healthcare.main.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,7 +53,8 @@ public class DoctorController
     @DeleteMapping(value="/{id}")
     public Boolean deleteDoctor(@PathVariable Long id)
     {
-        return doctorService.deleteDoctor(id);
+        Doctor doctor = doctorService.getDoctor(id);
+        return doctorService.deleteDoctor(doctor);
     }
 
     @DeleteMapping
