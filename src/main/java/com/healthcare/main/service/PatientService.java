@@ -13,6 +13,6 @@ public interface PatientService {
     Patient updatePatient(Patient patient);
     List<Patient> updatePatients(List<Patient> patientList);
 
-    Boolean deletePatient(Long id);
+    Boolean deletePatient(Patient patient);
     Boolean deleteAllPatients();
 }

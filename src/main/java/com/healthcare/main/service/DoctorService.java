@@ -14,6 +14,6 @@ public interface DoctorService
     Doctor updateDoctor(Doctor doctor);
     List<Doctor> updateDoctors(List<Doctor> doctorList);
 
-    Boolean deleteDoctor(Long id);
+    Boolean deleteDoctor(Doctor doctor);
     Boolean deleteAllDoctors();
 }

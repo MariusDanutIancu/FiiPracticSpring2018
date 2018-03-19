@@ -44,8 +44,8 @@ public class DoctorServiceImpl implements DoctorService
     }
 
     @Override
-    public Boolean deleteDoctor(Long id) {
-        return healthDB.deleteDoctor(id);
+    public Boolean deleteDoctor(Doctor doctor) {
+        return healthDB.deleteDoctor(doctor);
     }
 
     @Override

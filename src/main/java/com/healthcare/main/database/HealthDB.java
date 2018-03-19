@@ -5,6 +5,7 @@ import com.healthcare.main.model.Patient;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class HealthDB
@@ -12,6 +13,9 @@ public class HealthDB
     private Map<Long, Doctor> doctors;
     private Map<Long, Patient> patients;
 
+    /**
+     * Class default constructor
+     */
     public HealthDB(){
         this.doctors = new HashMap<>();
 
@@ -44,75 +48,143 @@ public class HealthDB
         this.patients.put(patient_1.getPatientID(), patient_1);
     }
 
+    /**
+     *
+     * @param id doctor unique id
+     * @return requested doctor object based on the unique id
+     */
     public Doctor getDoctor(Long id) {
-        return doctors.get(id);
+        return this.doctors.get(id);
     }
 
+    /**
+     *
+     * @return an array list with all the doctors in the database
+     */
     public List<Doctor> getAllDoctors() {
         return new ArrayList<>(doctors.values());
     }
 
+    /**
+     *
+     * @param doctor the doctor that needs to be saved in the database
+     * @return the doctor that has been saved
+     */
     public Doctor saveDoctor(Doctor doctor) {
+        doctor.setDoctorID(ThreadLocalRandom.current().nextLong(0, 10000));
         this.doctors.put(doctor.getDoctorID(), doctor);
         return doctor;
     }
 
+    /**
+     *
+     * @param doctor the doctor that to be updated in the database
+     * @return the doctor that has been updated
+     */
     public Doctor updateDoctor(Doctor doctor) {
-        doctors.put(doctor.getDoctorID(), doctor);
+        this.doctors.put(doctor.getDoctorID(), doctor);
         return doctor;
     }
 
+    /**
+     *
+     * @param doctorList a list of doctors that needs to be updated
+     * @return the list of doctors that has been updated
+     */
     public List<Doctor> updateDoctors(List<Doctor> doctorList) {
 
         for (Doctor doctor:doctorList) {
-            doctors.put(doctor.getDoctorID(), doctor);
+            this.doctors.put(doctor.getDoctorID(), doctor);
         }
         return doctorList;
     }
 
-    public Boolean deleteDoctor(Long id) {
-        doctors.remove(id);
+    /**
+     *
+     * @param doctor the doctor that will be deleted
+     * @return true if the doctor has been deleted, false otherwise
+     */
+    public Boolean deleteDoctor(Doctor doctor) {
+        this.doctors.remove(doctor.getDoctorID());
         return true;
     }
 
+    /**
+     * Deletes all doctors in the database
+     * @return True if the process has been completed, false otherwise
+     */
     public Boolean deleteAllDoctors() {
-        doctors.clear();
+        this.doctors.clear();
         return true;
     }
 
+    /**
+     *
+     * @param id patient unique id
+     * @return requested patient object based on the unique id
+     */
     public Patient getPatient(Long id) {
-        return patients.get(id);
+        return this.patients.get(id);
     }
 
+    /**
+     *
+     * @return an array list with all the patients in the database
+     */
     public List<Patient> getAllPatients() {
         return new ArrayList<>(patients.values());
     }
 
+    /**
+     *
+     * @param patient the patient that needs to be saved in the database
+     * @return the patient that has been saved
+     */
     public Patient savePatient(Patient patient) {
+        patient.setPatientID(ThreadLocalRandom.current().nextLong(0, 10000));
         this.patients.put(patient.getPatientID(), patient);
         return patient;
     }
 
+    /**
+     *
+     * @param patient the patient that to be updated in the database
+     * @return the patient that has been updated
+     */
     public Patient updatePatient(Patient patient) {
-        patients.put(patient.getPatientID(), patient);
+        this.patients.put(patient.getPatientID(), patient);
         return patient;
     }
 
+    /**
+     *
+     * @param patientList a list of patients that needs to be updated
+     * @return the list of patients that has been updated
+     */
     public List<Patient> updatePatients(List<Patient> patientList) {
 
         for (Patient patient:patientList) {
-            patients.put(patient.getPatientID(), patient);
+           this.patients.put(patient.getPatientID(), patient);
         }
         return patientList;
     }
 
-    public Boolean deletePatient(Long id) {
-        patients.remove(id);
+    /**
+     *
+     * @param patient the patient that will be deleted
+     * @return true if the patient has been deleted, false otherwise
+     */
+    public Boolean deletePatient(Patient patient) {
+        this.patients.remove(patient.getPatientID());
         return true;
     }
 
+    /**
+     * Deletes all patients in the database
+     * @return True if the process has been completed, false otherwise
+     */
     public Boolean deleteAllPatients() {
-        patients.clear();
+        this.patients.clear();
         return true;
     }
 }
