@@ -1,6 +1,7 @@
 package com.healthcare.main.controller;
 
 import com.healthcare.main.exception.BadRequestException;
+import com.healthcare.main.exception.MethodNotAllowedException;
 import com.healthcare.main.exception.NotFoundException;
 import com.healthcare.main.mapper.ObjectMapper;
 import com.healthcare.main.model.Doctor;
@@ -46,6 +47,13 @@ public class DoctorController
     public Doctor saveDoctor(@RequestBody Doctor doctor)
     {
         return doctorService.saveDoctor(doctor);
+    }
+
+    @PostMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public Doctor saveDoctor_not_allowed(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws MethodNotAllowedException
+    {
+        throw new MethodNotAllowedException("Method is not allowed.");
     }
 
     @PutMapping(value="/{id}")
