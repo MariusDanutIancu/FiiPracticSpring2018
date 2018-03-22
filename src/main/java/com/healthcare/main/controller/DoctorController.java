@@ -59,7 +59,7 @@ public class DoctorController
         }
 
         ObjectMapper.map2DoctorDb(doctorDb, doctor);
-        return  doctorService.updateDoctor(doctor);
+        return  doctorService.updateDoctor(doctorDb);
     }
 
     @DeleteMapping(value="/{id}")
