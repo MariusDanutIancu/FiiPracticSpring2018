@@ -2,6 +2,7 @@ package com.healthcare.main.errorHandling;
 
 
 import com.healthcare.main.exception.BadRequestException;
+import com.healthcare.main.exception.MethodNotAllowedException;
 import com.healthcare.main.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,13 @@ public class WebRestControllerAdvice
     private ErrorDto handleBadRequestException(BadRequestException ex)
     {
         return this.generateErrorDto(HttpStatus.BAD_REQUEST, ex);
+    }
+
+    @ExceptionHandler(MethodNotAllowedException.class)
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
+    private ErrorDto handleMethodNotAllowedException(BadRequestException ex)
+    {
+        return this.generateErrorDto(HttpStatus.METHOD_NOT_ALLOWED, ex);
     }
 
     @ExceptionHandler(Exception.class)
