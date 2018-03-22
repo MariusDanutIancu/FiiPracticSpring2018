@@ -8,16 +8,20 @@ public class Patient
     private int Age;
     private String Sex;
     private String PhoneNumber;
+    private String malady;
+    private String medicalTreatment;
 
     public Patient(){}
 
-    public Patient(Long patientID, String firstName, String lastName, int age, String sex, String phoneNumber) {
+    public Patient(Long patientID, String firstName, String lastName, int age, String sex, String phoneNumber, String malady, String medicalTreatment) {
         PatientID = patientID;
         FirstName = firstName;
         LastName = lastName;
         Age = age;
         Sex = sex;
         PhoneNumber = phoneNumber;
+        this.malady = malady;
+        this.medicalTreatment = medicalTreatment;
     }
 
     public Long getPatientID() {
@@ -66,5 +70,21 @@ public class Patient
 
     public void setPhoneNumber(String phoneNumber) {
         PhoneNumber = phoneNumber;
+    }
+
+    public String getMalady() {
+        return malady;
+    }
+
+    public void setMalady(String malady) {
+        this.malady = malady;
+    }
+
+    public String getMedicalTreatment() {
+        return medicalTreatment;
+    }
+
+    public void setMedicalTreatment(String medicalTreatment) {
+        this.medicalTreatment = medicalTreatment;
     }
 }
