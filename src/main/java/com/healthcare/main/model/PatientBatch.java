@@ -17,7 +17,7 @@ public class PatientBatch
         this.patientList = patientList;
     }
 
-    public List<Patient> getPatienList() {
+    public List<Patient> getPatientList() {
         return patientList;
     }
 
