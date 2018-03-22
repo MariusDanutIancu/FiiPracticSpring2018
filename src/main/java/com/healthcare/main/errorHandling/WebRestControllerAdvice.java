@@ -28,7 +28,7 @@ public class WebRestControllerAdvice
 
     @ExceptionHandler(MethodNotAllowedException.class)
     @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
-    private ErrorDto handleMethodNotAllowedException(BadRequestException ex)
+    private ErrorDto handleMethodNotAllowedException(MethodNotAllowedException ex)
     {
         return this.generateErrorDto(HttpStatus.METHOD_NOT_ALLOWED, ex);
     }
