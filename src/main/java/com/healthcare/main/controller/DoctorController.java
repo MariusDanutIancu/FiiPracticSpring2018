@@ -50,7 +50,6 @@ public class DoctorController
     }
 
     @PostMapping(value="/{id}")
-    @ResponseStatus(value = HttpStatus.CREATED)
     public Doctor saveDoctor_not_allowed(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
