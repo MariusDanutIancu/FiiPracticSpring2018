@@ -1,12 +1,12 @@
-package com.healthcare.main.controller;
+package com.healthcare.main.boundry.controller;
 
-import com.healthcare.main.exception.BadRequestException;
-import com.healthcare.main.exception.MethodNotAllowedException;
-import com.healthcare.main.exception.NotFoundException;
-import com.healthcare.main.mapper.ObjectMapper;
-import com.healthcare.main.model.Doctor;
-import com.healthcare.main.model.DoctorBatch;
-import com.healthcare.main.service.DoctorService;
+import com.healthcare.main.boundry.exception.MethodNotAllowedException;
+import com.healthcare.main.boundry.mapper.ObjectMapper;
+import com.healthcare.main.boundry.exception.BadRequestException;
+import com.healthcare.main.boundry.exception.NotFoundException;
+import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.DoctorBatch;
+import com.healthcare.main.control.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -90,7 +90,7 @@ public class DoctorController
 
             Long id = doctorBatch.getDoctorList().get(i).getDoctorID();
             Doctor doctor = doctorBatch.getDoctorList().get(i); // request op
-            Doctor doctorDb = doctorService.getDoctor(id); // database op
+            Doctor doctorDb = doctorService.getDoctor(id); // repository op
 
             if(doctorDb == null){
                 throw new NotFoundException(String.format("Doctor with id=%s was not found. Batch not updated", id));

@@ -1,4 +1,4 @@
-package com.healthcare.main.exception;
+package com.healthcare.main.boundry.exception;
 
 public class HealthGenericException extends Exception
 {

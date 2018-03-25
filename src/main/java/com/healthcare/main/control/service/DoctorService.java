@@ -1,6 +1,6 @@
-package com.healthcare.main.service;
+package com.healthcare.main.control.service;
 
-import com.healthcare.main.model.Doctor;
+import com.healthcare.main.entity.model.Doctor;
 
 import java.util.List;
 

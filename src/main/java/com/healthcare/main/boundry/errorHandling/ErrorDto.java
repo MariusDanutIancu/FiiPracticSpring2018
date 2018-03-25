@@ -1,4 +1,4 @@
-package com.healthcare.main.errorHandling;
+package com.healthcare.main.boundry.errorHandling;
 
 
 public class ErrorDto

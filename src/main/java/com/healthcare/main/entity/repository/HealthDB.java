@@ -1,7 +1,7 @@
-package com.healthcare.main.database;
+package com.healthcare.main.entity.repository;
 
-import com.healthcare.main.model.Doctor;
-import com.healthcare.main.model.Patient;
+import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.Patient;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,7 +32,7 @@ public class HealthDB
 
     /**
      *
-     * @return an array list with all the doctors in the database
+     * @return an array list with all the doctors in the repository
      */
     public List<Doctor> getAllDoctors() {
         return new ArrayList<>(doctors.values());
@@ -40,7 +40,7 @@ public class HealthDB
 
     /**
      *
-     * @param doctor the doctor that needs to be saved in the database
+     * @param doctor the doctor that needs to be saved in the repository
      * @return the doctor that has been saved
      */
     public Doctor saveDoctor(Doctor doctor) {
@@ -51,7 +51,7 @@ public class HealthDB
 
     /**
      *
-     * @param doctor the doctor that to be updated in the database
+     * @param doctor the doctor that to be updated in the repository
      * @return the doctor that has been updated
      */
     public Doctor updateDoctor(Doctor doctor) {
@@ -83,7 +83,7 @@ public class HealthDB
     }
 
     /**
-     * Deletes all doctors in the database
+     * Deletes all doctors in the repository
      * @return True if the process has been completed, false otherwise
      */
     public Boolean deleteAllDoctors() {
@@ -102,7 +102,7 @@ public class HealthDB
 
     /**
      *
-     * @return an array list with all the patients in the database
+     * @return an array list with all the patients in the repository
      */
     public List<Patient> getAllPatients() {
         return new ArrayList<>(patients.values());
@@ -110,7 +110,7 @@ public class HealthDB
 
     /**
      *
-     * @param patient the patient that needs to be saved in the database
+     * @param patient the patient that needs to be saved in the repository
      * @return the patient that has been saved
      */
     public Patient savePatient(Patient patient) {
@@ -121,7 +121,7 @@ public class HealthDB
 
     /**
      *
-     * @param patient the patient that to be updated in the database
+     * @param patient the patient that to be updated in the repository
      * @return the patient that has been updated
      */
     public Patient updatePatient(Patient patient) {
@@ -153,7 +153,7 @@ public class HealthDB
     }
 
     /**
-     * Deletes all patients in the database
+     * Deletes all patients in the repository
      * @return True if the process has been completed, false otherwise
      */
     public Boolean deleteAllPatients() {

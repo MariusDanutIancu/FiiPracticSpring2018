@@ -1,9 +1,9 @@
-package com.healthcare.main.errorHandling;
+package com.healthcare.main.boundry.errorHandling;
 
 
-import com.healthcare.main.exception.BadRequestException;
-import com.healthcare.main.exception.MethodNotAllowedException;
-import com.healthcare.main.exception.NotFoundException;
+import com.healthcare.main.boundry.exception.BadRequestException;
+import com.healthcare.main.boundry.exception.MethodNotAllowedException;
+import com.healthcare.main.boundry.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

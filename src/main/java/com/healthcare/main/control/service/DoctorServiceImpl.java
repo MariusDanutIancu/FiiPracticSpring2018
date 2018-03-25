@@ -1,8 +1,8 @@
-package com.healthcare.main.service;
+package com.healthcare.main.control.service;
 
 
-import com.healthcare.main.database.HealthDB;
-import com.healthcare.main.model.Doctor;
+import com.healthcare.main.entity.repository.HealthDB;
+import com.healthcare.main.entity.model.Doctor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

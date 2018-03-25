@@ -1,7 +1,7 @@
-package com.healthcare.main.mapper;
+package com.healthcare.main.boundry.mapper;
 
-import com.healthcare.main.model.Doctor;
-import com.healthcare.main.model.Patient;
+import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.Patient;
 
 public class ObjectMapper {
 

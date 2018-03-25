@@ -1,4 +1,4 @@
-package com.healthcare.main.model;
+package com.healthcare.main.entity.model;
 
 import java.util.ArrayList;
 import java.util.List;
