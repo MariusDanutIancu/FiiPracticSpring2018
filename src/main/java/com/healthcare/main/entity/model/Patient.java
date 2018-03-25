@@ -1,22 +1,37 @@
 package com.healthcare.main.entity.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @Entity
 @Table(name="Patient")
 public class Patient
 {
-
+    @Id
+    @Column(name="PatientID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long PatientID;
+
+    @Column(name = "FirstName", length = 40)
     private String FirstName;
+
+    @Column(name = "LastName", length = 40)
     private String LastName;
+
+    @Column(name = "Age")
     private int Age;
+
+    @Column(name = "Sex")
     private String Sex;
+
+    @Column(name = "PhoneNumber")
     private String PhoneNumber;
-    private String malady;
-    private String medicalTreatment;
+
+    @Column(name = "Malady")
+    private String Malady;
+
+    @Column(name = "MedicalTreatment")
+    private String MedicalTreatment;
 
     public Long getPatientID() {
         return PatientID;
@@ -67,18 +82,18 @@ public class Patient
     }
 
     public String getMalady() {
-        return malady;
+        return Malady;
     }
 
     public void setMalady(String malady) {
-        this.malady = malady;
+        this.Malady = malady;
     }
 
     public String getMedicalTreatment() {
-        return medicalTreatment;
+        return MedicalTreatment;
     }
 
     public void setMedicalTreatment(String medicalTreatment) {
-        this.medicalTreatment = medicalTreatment;
+        this.MedicalTreatment = medicalTreatment;
     }
 }
