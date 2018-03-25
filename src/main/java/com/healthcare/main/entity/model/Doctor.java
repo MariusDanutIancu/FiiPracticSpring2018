@@ -1,27 +1,33 @@
 package com.healthcare.main.entity.model;
 
+import javax.persistence.*;
 
+@Entity
+@Table(name="Doctor")
 public class Doctor
 {
+    @Id
+    @Column(name = "DoctorID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long DoctorID;
+
+    @Column(name = "FirstName", length = 20)
     private String FirstName;
+
+    @Column(name = "LastName", length = 20)
     private String LastName;
+
+    @Column(name = "Age")
     private int Age;
+
+    @Column(name = "Sex")
     private String Sex;
+
+    @Column(name = "PhoneNumber")
     private String PhoneNumber;
+
+    @Column(name = "Specialization")
     private String Specialization;
-
-    public Doctor() {}
-
-    public Doctor(Long doctorID, String firstName, String lastName, int age, String sex, String phoneNumber, String specialization) {
-        DoctorID = doctorID;
-        FirstName = firstName;
-        LastName = lastName;
-        Age = age;
-        Sex = sex;
-        PhoneNumber = phoneNumber;
-        Specialization = specialization;
-    }
 
     public Long getDoctorID() {
         return DoctorID;

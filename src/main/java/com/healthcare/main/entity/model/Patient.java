@@ -1,7 +1,14 @@
 package com.healthcare.main.entity.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name="Patient")
 public class Patient
 {
+
     private Long PatientID;
     private String FirstName;
     private String LastName;
@@ -10,19 +17,6 @@ public class Patient
     private String PhoneNumber;
     private String malady;
     private String medicalTreatment;
-
-    public Patient(){}
-
-    public Patient(Long patientID, String firstName, String lastName, int age, String sex, String phoneNumber, String malady, String medicalTreatment) {
-        PatientID = patientID;
-        FirstName = firstName;
-        LastName = lastName;
-        Age = age;
-        Sex = sex;
-        PhoneNumber = phoneNumber;
-        this.malady = malady;
-        this.medicalTreatment = medicalTreatment;
-    }
 
     public Long getPatientID() {
         return PatientID;
