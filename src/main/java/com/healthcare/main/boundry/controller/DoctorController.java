@@ -5,7 +5,6 @@ import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.entity.model.Doctor;
-import com.healthcare.main.entity.model.DoctorBatch;
 import com.healthcare.main.control.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -69,40 +68,6 @@ public class DoctorController
 
         ObjectMapper.map2DoctorDb(doctorDb, doctor);
         return  doctorService.updateDoctor(doctorDb);
-    }
-
-    /**
-     * Function is not validated!
-     *
-     * @param doctorBatch
-     * @return
-     * @throws NotFoundException
-     */
-    @PutMapping()
-    public DoctorBatch updateDoctors(@RequestBody DoctorBatch doctorBatch) throws NotFoundException
-    {
-        int batchSize = doctorBatch.getDoctorList().size();
-        List<Doctor> mappedData = new ArrayList<>();
-
-        // No changes are made if an error is found
-        // Map necessary data
-        for (int i = 0; i < batchSize; i++) {
-
-            Long id = doctorBatch.getDoctorList().get(i).getDoctorID();
-            Doctor doctor = doctorBatch.getDoctorList().get(i); // request op
-            Doctor doctorDb = doctorService.getDoctor(id); // repository op
-
-            if(doctorDb == null){
-                throw new NotFoundException(String.format("Doctor with id=%s was not found. Batch not updated", id));
-            }
-
-            ObjectMapper.map2DoctorDb(doctorDb, doctor);
-            mappedData.add(doctorDb);
-        }
-
-        List<Doctor> updatedData = doctorService.updateDoctors(mappedData);
-        doctorBatch.setDoctorList(updatedData);
-        return doctorBatch;
     }
 
     @DeleteMapping(value="/{id}")
