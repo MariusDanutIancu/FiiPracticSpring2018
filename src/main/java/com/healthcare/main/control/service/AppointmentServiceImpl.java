@@ -1,6 +1,8 @@
 package com.healthcare.main.control.service;
 
 import com.healthcare.main.entity.model.Appointment;
+import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.entity.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,5 +46,11 @@ public class AppointmentServiceImpl implements AppointmentService{
     public void deleteAllAppoinments()
     {
         appointmentRepository.deleteAll();
+    }
+
+    @Override
+    public List<Appointment> findAllByDoctorAndPatient(Doctor doctor, Patient patient)
+    {
+        return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
     }
 }

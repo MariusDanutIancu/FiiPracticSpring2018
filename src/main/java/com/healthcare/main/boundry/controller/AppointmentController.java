@@ -120,4 +120,20 @@ public class AppointmentController {
     {
         appointmentService.deleteAllAppoinments();
     }
+
+    @GetMapping(value="/filter")
+    public List<Appointment> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
+    {
+        Doctor doctorDb = doctorService.getDoctor(doctorid);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
+        }
+
+        Patient patientDB = patientService.getPatient(patientid);
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
+        }
+
+        return appointmentService.findAllByDoctorAndPatient(doctorDb, patientDB);
+    }
 }
