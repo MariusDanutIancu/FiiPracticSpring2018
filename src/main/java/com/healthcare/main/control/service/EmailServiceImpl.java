@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService
 
     @Override
     public Email getEmail(Long id) {
-        return null;
+       return emailRepository.findById(id).orElse(null);
     }
 
     @Override
