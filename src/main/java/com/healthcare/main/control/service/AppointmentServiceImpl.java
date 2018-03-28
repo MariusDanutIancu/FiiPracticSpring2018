@@ -19,7 +19,7 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
-    public List<Appointment> getAllAppointments(Long id) {
+    public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
 

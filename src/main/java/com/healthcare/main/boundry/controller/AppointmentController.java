@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping(value="/api/0.1/appointments")
@@ -33,7 +35,13 @@ public class AppointmentController {
     @GetMapping(value="/{id}")
     public Appointment getAppointment(@PathVariable("id") Long id) throws MethodNotAllowedException
     {
-        throw new MethodNotAllowedException("Method is not allowed.");
+       return appointmentService.getAppointment(id);
+    }
+
+    @GetMapping()
+    public List<Appointment> getAllAppointments()
+    {
+       return appointmentService.getAllAppointments();
     }
 
     @PostMapping()
