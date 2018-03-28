@@ -36,6 +36,10 @@ public class Doctor
             mappedBy = "doctor")
     private Set<Appointment> appointments = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "EmailID")
+    private Email email;
+
     public Long getDoctorID() {
         return DoctorID;
     }
@@ -98,5 +102,13 @@ public class Doctor
 
     public void setAppointments(Set<Appointment> appointments) {
         this.appointments = appointments;
+    }
+
+    public Email getEmail() {
+        return email;
+    }
+
+    public void setEmail(Email email) {
+        this.email = email;
     }
 }
