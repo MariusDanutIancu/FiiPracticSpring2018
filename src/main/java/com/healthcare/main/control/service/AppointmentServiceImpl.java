@@ -13,11 +13,17 @@ public class AppointmentServiceImpl implements AppointmentService{
 
     @Override
     public Appointment getAppointment(Long id) {
-        return null;
+        return appointmentRepository.findById(id).orElse(null);
     }
 
     @Override
     public Appointment saveAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
+
+    @Override
+    public Appointment updateAppointment(Appointment appointment)
+    {
         return appointmentRepository.save(appointment);
     }
 }

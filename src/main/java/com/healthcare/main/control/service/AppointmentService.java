@@ -6,4 +6,5 @@ public interface AppointmentService {
 
     Appointment getAppointment(Long id);
     Appointment saveAppointment(Appointment doctor);
+    Appointment updateAppointment(Appointment appointment);
 }
