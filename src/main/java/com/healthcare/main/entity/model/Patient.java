@@ -114,6 +114,13 @@ public class Patient
     }
 
     public Set<Appointment> getAppointments() {
+
+        for(Appointment ap:this.appointments)
+        {
+            ap.setPatientID(ap.getPatient().getPatientID());
+            ap.setDoctorID(ap.getDoctor().getDoctorID());
+        }
+
         return appointments;
     }
 
