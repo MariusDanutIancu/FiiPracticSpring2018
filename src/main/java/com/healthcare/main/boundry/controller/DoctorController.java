@@ -150,7 +150,7 @@ public class DoctorController
 
         doctorDb.setEmail(emailDb);
         doctorDb = doctorService.updateDoctor(doctorDb);
-        doctorDb.setEmailId(emailDb.getEmailID());
+        doctorDb.setEmailId(email.getEmailID());
         return doctorDb;
     }
 }
