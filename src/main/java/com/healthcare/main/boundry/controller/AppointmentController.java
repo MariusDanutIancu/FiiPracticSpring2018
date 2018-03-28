@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping(value="/api/0.1/appoinments")
+@RequestMapping(value="/api/0.1/appointments")
 public class AppointmentController {
 
     private AppointmentService appointmentService;
@@ -36,22 +36,13 @@ public class AppointmentController {
         throw new MethodNotAllowedException("Method is not allowed.");
     }
 
-    @PostMapping
+    @PostMapping()
     @ResponseStatus(value = HttpStatus.CREATED)
-    public Appointment saveAppointment(@RequestBody Appointment appoinment)
-    {
-        return appointmentService.saveAppointment(appoinment);
-    }
-
-    @PostMapping(value="/appointments/{appointmentid}")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public Appointment putAppointment(@PathVariable("appointmentid") Long appointmentid, @RequestBody Appointment appointment)
-            throws NotFoundException, BadRequestException
+    public Appointment postAppointment(@RequestBody Appointment appointment)
+            throws NotFoundException
     {
         Doctor doctorDB = doctorService.getDoctor(appointment.getDoctorID());
         Patient patientDB = patientService.getPatient(appointment.getPatientID());
-        Appointment appointmentDB = appointmentService.getAppointment(appointmentid);
-
 
         if(doctorDB == null){
             throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointment.getDoctorID()));
@@ -61,16 +52,15 @@ public class AppointmentController {
             throw new NotFoundException(String.format("Patient with id=%s was not found.", appointment.getPatientID()));
         }
 
-        if(!appointmentid.equals(appointment.getAppointmentID())){
-            throw new BadRequestException("The id is not the same with id from object");
-        }
+        appointment.setDoctor(doctorDB);
+        appointment.setPatient(patientDB);
 
-        appointmentDB.setDoctor(doctorDB);
-        appointmentDB.setPatient(patientDB);
-
+        Appointment appointmentDB = new Appointment();
         ObjectMapper.map2AppointmentDb(appointmentDB, appointment);
+        appointmentDB = appointmentService.saveAppointment(appointmentDB);
+        appointmentDB.setDoctorID(appointment.getDoctorID());
+        appointmentDB.setPatientID(appointment.getPatientID());
 
-        return appointmentService.updateAppointment(appointmentDB);
+        return appointmentDB;
     }
-
 }
