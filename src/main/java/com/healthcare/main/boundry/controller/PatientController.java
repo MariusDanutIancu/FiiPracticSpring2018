@@ -4,6 +4,10 @@ import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
+import com.healthcare.main.control.service.AppointmentService;
+import com.healthcare.main.control.service.DoctorService;
+import com.healthcare.main.entity.model.Appointment;
+import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +22,15 @@ import java.util.List;
 public class PatientController
 {
     private PatientService patientService;
+    private DoctorService doctorService;
+    private AppointmentService appointmentService;
 
     @Autowired
-    public PatientController(PatientService patientService) {
+    public PatientController(PatientService patientService, DoctorService doctorService, AppointmentService appointmentService)
+    {
         this.patientService = patientService;
+        this.doctorService = doctorService;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping(value="/{id}")
@@ -90,5 +99,41 @@ public class PatientController
     public void deleteAllPatients()
     {
         patientService.deleteAllPatients();
+    }
+
+    @PostMapping(value="/{patientid}/appointments")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public Appointment saveAppointment(@PathVariable("patientid") Long patientid, @RequestBody Appointment appointment)
+            throws NotFoundException, BadRequestException
+    {
+        Patient patientDB = patientService.getPatient(appointment.getPatientID());
+        Doctor doctorDB = doctorService.getDoctor(appointment.getDoctorID());
+
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointment.getPatientID()));
+        }
+
+        if(doctorDB == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointment.getDoctorID()));
+        }
+
+        if(!patientid.equals(patientDB.getPatientID())){
+            throw new BadRequestException("The id is not the same with id from object");
+        }
+
+        appointment.setDoctor(doctorDB);
+        appointment.setPatient(patientDB);
+
+        Appointment appointmentDB = new Appointment();
+        ObjectMapper.map2AppointmentDb(appointmentDB, appointment);
+
+        return appointmentService.saveAppointment(appointmentDB);
+    }
+
+    @GetMapping(value="/{patientid}/appointments/{doctorid}")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public Appointment getAppointment(@PathVariable("patientid") Long patientID, @PathVariable("doctorid") Long doctorID) throws MethodNotAllowedException
+    {
+        throw new MethodNotAllowedException("Method is not allowed.");
     }
 }
