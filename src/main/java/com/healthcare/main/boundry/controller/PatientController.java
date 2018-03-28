@@ -24,16 +24,12 @@ import java.util.List;
 public class PatientController
 {
     private PatientService patientService;
-    private DoctorService doctorService;
-    private AppointmentService appointmentService;
     private EmailService emailService;
 
     @Autowired
-    public PatientController(PatientService patientService, DoctorService doctorService, AppointmentService appointmentService, EmailService emailService)
+    public PatientController(PatientService patientService,  EmailService emailService)
     {
         this.patientService = patientService;
-        this.doctorService = doctorService;
-        this.appointmentService = appointmentService;
         this.emailService = emailService;
     }
 
@@ -103,42 +99,6 @@ public class PatientController
     public void deleteAllPatients()
     {
         patientService.deleteAllPatients();
-    }
-
-    @PostMapping(value="/{patientid}/appointments")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public Appointment saveAppointment(@PathVariable("patientid") Long patientid, @RequestBody Appointment appointment)
-            throws NotFoundException, BadRequestException
-    {
-        Patient patientDB = patientService.getPatient(appointment.getPatientID());
-        Doctor doctorDB = doctorService.getDoctor(appointment.getDoctorID());
-
-        if(patientDB == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointment.getPatientID()));
-        }
-
-        if(doctorDB == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointment.getDoctorID()));
-        }
-
-        if(!patientid.equals(patientDB.getPatientID())){
-            throw new BadRequestException("The id is not the same with id from object");
-        }
-
-        appointment.setDoctor(doctorDB);
-        appointment.setPatient(patientDB);
-
-        Appointment appointmentDB = new Appointment();
-        ObjectMapper.map2AppointmentDb(appointmentDB, appointment);
-
-        return appointmentService.saveAppointment(appointmentDB);
-    }
-
-    @GetMapping(value="/{patientid}/appointments/{doctorid}")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public Appointment getAppointment(@PathVariable("patientid") Long patientID, @PathVariable("doctorid") Long doctorID) throws MethodNotAllowedException
-    {
-        throw new MethodNotAllowedException("Method is not allowed.");
     }
 
     @PutMapping(value="/{paitentid}/emails")
