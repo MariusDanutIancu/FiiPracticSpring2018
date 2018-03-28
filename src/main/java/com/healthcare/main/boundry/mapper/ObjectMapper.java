@@ -2,6 +2,7 @@ package com.healthcare.main.boundry.mapper;
 
 import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.Email;
 import com.healthcare.main.entity.model.Patient;
 import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo;
 
@@ -26,5 +27,11 @@ public class ObjectMapper {
         appointmentDB.setDescription(appointmentRequest.getDescription());
         appointmentDB.setDoctor(appointmentRequest.getDoctor());
         appointmentDB.setPatient(appointmentRequest.getPatient());
+    }
+
+    public static void map2EmailDb(Email emailDB, Email emailRequest)
+    {
+        emailDB.setEmail(emailRequest.getEmail());
+        emailDB.setDoctor(emailRequest.getDoctor());
     }
 }
