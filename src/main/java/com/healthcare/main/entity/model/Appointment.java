@@ -14,6 +14,10 @@ public class Appointment
     @Column(name = "Description", length = 100)
     private String Description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DoctorID", nullable = false)
+    private Doctor doctor;
+
     public Long getAppoinmentID() {
         return AppoinmentID;
     }
@@ -28,6 +32,14 @@ public class Appointment
 
     public void setDescription(String description) {
         Description = description;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 }
 
