@@ -1,6 +1,8 @@
 package com.healthcare.main.entity.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -32,6 +34,11 @@ public class Patient
 
     @Column(name = "MedicalTreatment")
     private String MedicalTreatment;
+
+    @OneToMany(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            mappedBy = "patient")
+    private Set<Appointment> appointments = new HashSet<>();
 
     public Long getPatientID() {
         return PatientID;
@@ -95,5 +102,13 @@ public class Patient
 
     public void setMedicalTreatment(String medicalTreatment) {
         this.MedicalTreatment = medicalTreatment;
+    }
+
+    public Set<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

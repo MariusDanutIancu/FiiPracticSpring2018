@@ -18,6 +18,18 @@ public class Appointment
     @JoinColumn(name = "DoctorID", nullable = false)
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PatientID", nullable = false)
+    private Patient patient;
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
+    }
+
     public Long getAppoinmentID() {
         return AppoinmentID;
     }
