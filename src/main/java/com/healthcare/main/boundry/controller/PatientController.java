@@ -6,8 +6,10 @@ import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.DoctorService;
+import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.entity.model.Email;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,15 @@ public class PatientController
     private PatientService patientService;
     private DoctorService doctorService;
     private AppointmentService appointmentService;
+    private EmailService emailService;
 
     @Autowired
-    public PatientController(PatientService patientService, DoctorService doctorService, AppointmentService appointmentService)
+    public PatientController(PatientService patientService, DoctorService doctorService, AppointmentService appointmentService, EmailService emailService)
     {
         this.patientService = patientService;
         this.doctorService = doctorService;
         this.appointmentService = appointmentService;
+        this.emailService = emailService;
     }
 
     @GetMapping(value="/{id}")
@@ -135,5 +139,24 @@ public class PatientController
     public Appointment getAppointment(@PathVariable("patientid") Long patientID, @PathVariable("doctorid") Long doctorID) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
+    }
+
+    @PutMapping(value="/{paitentid}/emails")
+    public Patient addEmail(@PathVariable("paitentid") Long paitentid, @RequestBody Email email) throws BadRequestException, NotFoundException
+    {
+        Patient patientDb = patientService.getPatient(paitentid);
+        if(patientDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", paitentid));
+        }
+
+        Email emailDb = emailService.getEmail(email.getEmailID());
+        if(emailDb == null){
+            throw new NotFoundException(String.format("Email with id=%s was not found.", email.getEmailID()));
+        }
+
+        patientDb.setEmail(emailDb);
+        patientDb = patientService.updatePatient(patientDb);
+        patientDb.setEmailId(email.getEmailID());
+        return patientDb;
     }
 }

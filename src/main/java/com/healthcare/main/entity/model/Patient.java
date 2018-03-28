@@ -1,5 +1,7 @@
 package com.healthcare.main.entity.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +45,9 @@ public class Patient
     @OneToOne
     @JoinColumn(name = "EmailID")
     private Email email;
+
+    @Transient
+    private Long emailId;
 
     public Long getPatientID() {
         return PatientID;
@@ -116,11 +121,20 @@ public class Patient
         this.appointments = appointments;
     }
 
+    @JsonIgnore
     public Email getEmail() {
         return email;
     }
 
     public void setEmail(Email email) {
         this.email = email;
+    }
+
+    public Long getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(Long emailId) {
+        this.emailId = emailId;
     }
 }
