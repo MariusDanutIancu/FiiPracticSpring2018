@@ -5,6 +5,8 @@ import com.healthcare.main.entity.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AppointmentServiceImpl implements AppointmentService{
 
@@ -17,6 +19,11 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
+    public List<Appointment> getAllAppointments(Long id) {
+        return appointmentRepository.findAll();
+    }
+
+    @Override
     public Appointment saveAppointment(Appointment appointment) {
         return appointmentRepository.save(appointment);
     }
@@ -25,5 +32,17 @@ public class AppointmentServiceImpl implements AppointmentService{
     public Appointment updateAppointment(Appointment appointment)
     {
         return appointmentRepository.save(appointment);
+    }
+
+    @Override
+    public void deleteAppoinment(Appointment appointment)
+    {
+        appointmentRepository.delete(appointment);
+    }
+
+    @Override
+    public void deleteAllAppoinments()
+    {
+        appointmentRepository.deleteAll();
     }
 }

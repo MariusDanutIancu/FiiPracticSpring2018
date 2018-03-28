@@ -63,4 +63,53 @@ public class AppointmentController {
 
         return appointmentDB;
     }
+
+    @PutMapping(value="/{id}")
+    public Appointment updateAppointment(@PathVariable("id") Long id, @RequestBody Appointment appointment) throws BadRequestException, NotFoundException
+    {
+        if(!id.equals(appointment.getAppointmentID()))
+        {
+            throw new BadRequestException("The id is not the same with id from object");
+        }
+
+        Appointment appointmentDb = appointmentService.getAppointment(id);
+        if(appointmentDb == null){
+            throw new NotFoundException(String.format("Appointment with id=%s was not found.", id));
+        }
+
+        Doctor doctorDb = doctorService.getDoctor(id);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+        }
+
+        Patient patientDB = patientService.getPatient(appointment.getPatientID());
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointment.getPatientID()));
+        }
+
+        appointment.setDoctor(doctorDb);
+        appointment.setPatient(patientDB);
+
+        ObjectMapper.map2AppointmentDb(appointmentDb, appointment);
+
+        return appointmentService.updateAppointment(appointmentDb);
+    }
+
+    @DeleteMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAppointment(@PathVariable Long id) throws NotFoundException
+    {
+        Appointment appointmentDb = appointmentService.getAppointment(id);
+        if(appointmentDb == null){
+            throw new NotFoundException(String.format("Appointment with id=%s was not found.", id));
+        }
+        appointmentService.deleteAppoinment(appointmentDb);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAllAppoinments()
+    {
+        appointmentService.deleteAllAppoinments();
+    }
 }

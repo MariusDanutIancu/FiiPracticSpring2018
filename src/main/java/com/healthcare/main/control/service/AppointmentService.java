@@ -2,9 +2,14 @@ package com.healthcare.main.control.service;
 
 import com.healthcare.main.entity.model.Appointment;
 
+import java.util.List;
+
 public interface AppointmentService {
 
     Appointment getAppointment(Long id);
-    Appointment saveAppointment(Appointment doctor);
+    List<Appointment> getAllAppointments(Long id);
+    Appointment saveAppointment(Appointment appointment);
     Appointment updateAppointment(Appointment appointment);
+    void deleteAppoinment(Appointment appointment);
+    void deleteAllAppoinments();
 }
