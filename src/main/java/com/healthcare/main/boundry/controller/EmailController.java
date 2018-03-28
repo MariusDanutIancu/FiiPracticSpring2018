@@ -1,11 +1,15 @@
 package com.healthcare.main.boundry.controller;
 
-import com.healthcare.main.boundry.exception.MethodNotAllowedException;
+import com.healthcare.main.boundry.exception.BadRequestException;
+import com.healthcare.main.boundry.exception.NotFoundException;
+import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value="/api/0.1/emails")
@@ -19,9 +23,9 @@ public class EmailController {
     }
 
     @GetMapping(value="/{id}")
-    public Email getEmail(@PathVariable("id") Long id) throws MethodNotAllowedException
+    public Email getEmail(@PathVariable("id") Long id)
     {
-        throw new MethodNotAllowedException("Method is not allowed.");
+        return emailService.getEmail(id);
     }
 
     @PostMapping
@@ -29,5 +33,47 @@ public class EmailController {
     public Email saveEmail(@RequestBody Email email)
     {
         return emailService.saveEmail(email);
+    }
+
+    @GetMapping()
+    public List<Email> getAllEmails()
+    {
+        return emailService.getAllEmails();
+    }
+
+    @PutMapping(value="/{id}")
+    public Email updateAppointment(@PathVariable("id") Long id, @RequestBody Email email) throws BadRequestException, NotFoundException
+    {
+        if(!id.equals(email.getEmailID()))
+        {
+            throw new BadRequestException("The id is not the same with id from object");
+        }
+
+        Email emailDb = emailService.getEmail(id);
+        if(emailDb == null){
+            throw new NotFoundException(String.format("Email with id=%s was not found.", id));
+        }
+
+        ObjectMapper.map2EmailDb(emailDb, email);
+
+        return emailService.updateEmail(emailDb);
+    }
+
+    @DeleteMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteEmail(@PathVariable Long id) throws NotFoundException
+    {
+        Email emailDb = emailService.getEmail(id);
+        if(emailDb == null){
+            throw new NotFoundException(String.format("Email with id=%s was not found.", id));
+        }
+        emailService.deleteEmail(emailDb);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAllEmails()
+    {
+        emailService.deleteAllEmails();
     }
 }

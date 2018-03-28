@@ -25,7 +25,7 @@ public class EmailServiceImpl implements EmailService
     }
 
     @Override
-    public List<Email> getAllEmails(Long id) {
+    public List<Email> getAllEmails() {
         return emailRepository.findAll();
     }
 

@@ -8,7 +8,7 @@ public interface EmailService {
 
     Email getEmail(Long id);
     Email saveEmail(Email email);
-    List<Email> getAllEmails(Long id);
+    List<Email> getAllEmails();
     Email updateEmail(Email email);
     void deleteEmail(Email email);
     void deleteAllEmails();
