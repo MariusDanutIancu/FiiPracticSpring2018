@@ -126,6 +126,14 @@ public class Doctor
     }
 
     public Long getEmailId() {
+        try
+        {
+            emailId = email.getEmailID();
+        }
+        catch (NullPointerException e)
+        {
+            return null;
+        }
         return emailId;
     }
 

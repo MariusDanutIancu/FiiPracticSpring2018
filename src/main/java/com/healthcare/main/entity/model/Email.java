@@ -1,5 +1,7 @@
 package com.healthcare.main.entity.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,6 +22,44 @@ public class Email
     @OneToOne(mappedBy = "email")
     private Patient patient;
 
+    @Transient
+    private Long DoctorID;
+
+    @Transient
+    private Long PatientID;
+
+    public Long getDoctorID() {
+        try
+        {
+            DoctorID = doctor.getDoctorID();
+        }
+        catch (NullPointerException e)
+        {
+            return null;
+        }
+        return DoctorID;
+    }
+
+    public void setDoctorID(Long doctorID) {
+        DoctorID = doctorID;
+    }
+
+    public Long getPatientID() {
+        try
+        {
+            PatientID=patient.getPatientID();
+        }
+        catch (NullPointerException e)
+        {
+            return null;
+        }
+        return PatientID;
+    }
+
+    public void setPatientID(Long patientID) {
+        PatientID = patientID;
+    }
+
     public Long getEmailID() {
         return EmailID;
     }
@@ -28,6 +68,7 @@ public class Email
         EmailID = emailID;
     }
 
+    @JsonIgnore
     public Doctor getDoctor() {
         return doctor;
     }
@@ -36,6 +77,7 @@ public class Email
         this.doctor = doctor;
     }
 
+    @JsonIgnore
     public Patient getPatient() {
         return patient;
     }
