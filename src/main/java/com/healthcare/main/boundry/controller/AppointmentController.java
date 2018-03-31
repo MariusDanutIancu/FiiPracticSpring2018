@@ -57,7 +57,7 @@ public class AppointmentController {
     public List<Appointment> getAllAppointments() throws NotFoundException
     {
         List<Appointment> appointmentListDb = appointmentService.getAllAppointments();
-        if(appointmentListDb == null)
+        if(appointmentListDb.size() == 0)
         {
             throw new NotFoundException("There are no appointments in the database.");
         }

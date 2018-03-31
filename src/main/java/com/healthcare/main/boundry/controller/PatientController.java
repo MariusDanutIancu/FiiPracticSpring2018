@@ -55,7 +55,7 @@ public class PatientController
     public List<Patient> getPatients() throws NotFoundException {
 
         List<Patient> patientListDb = patientService.getAllPatients();
-        if(patientListDb == null)
+        if(patientListDb.size() == 0)
         {
             throw new NotFoundException("There are no emails in the database.");
         }

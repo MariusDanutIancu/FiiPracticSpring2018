@@ -53,7 +53,7 @@ public class DoctorController
     public List<Doctor> getDoctors() throws NotFoundException
     {
         List<Doctor> doctorListDb = doctorService.getAllDoctors();
-        if(doctorListDb == null)
+        if(doctorListDb.size() == 0)
         {
             throw new NotFoundException("There are no doctors in the database.");
         }

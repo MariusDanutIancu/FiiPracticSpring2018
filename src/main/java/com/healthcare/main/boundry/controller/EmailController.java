@@ -59,7 +59,7 @@ public class EmailController {
     @GetMapping()
     public List<Email> getAllEmails() throws NotFoundException {
         List<Email> emailListDb = emailService.getAllEmails();
-        if(emailListDb == null)
+        if(emailListDb.size() == 0)
         {
             throw new NotFoundException("There are no emails in the database.");
         }
