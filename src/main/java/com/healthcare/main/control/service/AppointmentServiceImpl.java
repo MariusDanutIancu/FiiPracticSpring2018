@@ -12,8 +12,14 @@ import java.util.List;
 @Service
 public class AppointmentServiceImpl implements AppointmentService{
 
-    @Autowired
+
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository) {
+        this.appointmentRepository = appointmentRepository;
+    }
+
 
     @Override
     public Appointment getAppointment(Long id) {

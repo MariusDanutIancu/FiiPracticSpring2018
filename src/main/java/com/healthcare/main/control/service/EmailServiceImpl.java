@@ -11,8 +11,13 @@ import java.util.List;
 @Service
 public class EmailServiceImpl implements EmailService
 {
-    @Autowired
+
     private EmailRepository emailRepository;
+
+    @Autowired
+    public EmailServiceImpl(EmailRepository emailRepository) {
+        this.emailRepository = emailRepository;
+    }
 
     @Override
     public Email getEmail(Long id) {
