@@ -4,14 +4,10 @@ import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
-import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.EmailService;
-import com.healthcare.main.control.service.PatientService;
-import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.entity.model.Email;
-import com.healthcare.main.entity.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +27,12 @@ public class DoctorController
         this.emailService = emailService;
     }
 
+    /**
+     *
+      * @param id
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping(value="/{id}")
     public Doctor getDoctor(@PathVariable("id") Long id) throws NotFoundException
     {
@@ -42,12 +44,27 @@ public class DoctorController
         return doctor;
     }
 
+    /**
+     *
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping
-    public List<Doctor> getDoctors()
+    public List<Doctor> getDoctors() throws NotFoundException
     {
-        return doctorService.getAllDoctors();
+        List<Doctor> doctorListDb = doctorService.getAllDoctors();
+        if(doctorListDb == null)
+        {
+            throw new NotFoundException("There are no doctors in the database.");
+        }
+        return doctorListDb;
     }
 
+    /**
+     *
+      * @param doctor
+     * @return
+     */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public Doctor saveDoctor(@RequestBody Doctor doctor)
@@ -55,12 +72,27 @@ public class DoctorController
         return doctorService.saveDoctor(doctor);
     }
 
+    /**
+     *
+     * @param id
+     * @param doctor
+     * @return
+     * @throws MethodNotAllowedException
+     */
     @PostMapping(value="/{id}")
     public Doctor saveDoctor_not_allowed(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
     }
 
+    /**
+     *
+     * @param id
+     * @param doctor
+     * @return
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     @PutMapping(value="/{id}")
     public Doctor updateDoctor(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws BadRequestException, NotFoundException
     {
@@ -77,24 +109,14 @@ public class DoctorController
         return  doctorService.updateDoctor(doctorDb);
     }
 
-    @DeleteMapping(value="/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteDoctor(@PathVariable Long id) throws NotFoundException
-    {
-        Doctor doctorDb  = doctorService.getDoctor(id);
-        if(doctorDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
-        }
-        doctorService.deleteDoctor(doctorDb);
-    }
-
-    @DeleteMapping
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteAllDoctors()
-    {
-        doctorService.deleteAllDoctors();
-    }
-
+    /**
+     *
+     * @param doctorid
+     * @param email
+     * @return
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     @PutMapping(value="/{doctorid}/emails")
     public Doctor addEmail(@PathVariable("doctorid") Long doctorid, @RequestBody Email email) throws BadRequestException, NotFoundException
     {
@@ -112,5 +134,31 @@ public class DoctorController
         doctorDb = doctorService.updateDoctor(doctorDb);
         doctorDb.setEmailId(email.getEmailID());
         return doctorDb;
+    }
+
+    /**
+     *
+     * @param id
+     * @throws NotFoundException
+     */
+    @DeleteMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteDoctor(@PathVariable Long id) throws NotFoundException
+    {
+        Doctor doctorDb  = doctorService.getDoctor(id);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+        }
+        doctorService.deleteDoctor(doctorDb);
+    }
+
+    /**
+     *
+     */
+    @DeleteMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAllDoctors()
+    {
+        doctorService.deleteAllDoctors();
     }
 }
