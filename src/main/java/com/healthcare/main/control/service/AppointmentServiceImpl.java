@@ -37,13 +37,13 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
-    public void deleteAppoinment(Appointment appointment)
+    public void deleteAppointment(Appointment appointment)
     {
         appointmentRepository.delete(appointment);
     }
 
     @Override
-    public void deleteAllAppoinments()
+    public void deleteAllAppointments()
     {
         appointmentRepository.deleteAll();
     }

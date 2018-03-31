@@ -12,7 +12,7 @@ public interface AppointmentService {
     List<Appointment> getAllAppointments();
     Appointment saveAppointment(Appointment appointment);
     Appointment updateAppointment(Appointment appointment);
-    void deleteAppoinment(Appointment appointment);
-    void deleteAllAppoinments();
+    void deleteAppointment(Appointment appointment);
+    void deleteAllAppointments();
     List<Appointment> findAllByDoctorAndPatient(Doctor doctor, Patient patient);
 }

@@ -173,7 +173,7 @@ public class AppointmentController {
         if(appointmentDb == null){
             throw new NotFoundException(String.format("Appointment with id=%s was not found.", id));
         }
-        appointmentService.deleteAppoinment(appointmentDb);
+        appointmentService.deleteAppointment(appointmentDb);
     }
 
     /**
@@ -183,6 +183,6 @@ public class AppointmentController {
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteAllAppointments()
     {
-        appointmentService.deleteAllAppoinments();
+        appointmentService.deleteAllAppointments();
     }
 }
