@@ -4,11 +4,7 @@ import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
-import com.healthcare.main.control.service.AppointmentService;
-import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.control.service.EmailService;
-import com.healthcare.main.entity.model.Appointment;
-import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Email;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
@@ -33,6 +29,12 @@ public class PatientController
         this.emailService = emailService;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping(value="/{id}")
     public Patient getPatient(@PathVariable("id") Long id) throws NotFoundException
     {
@@ -44,12 +46,27 @@ public class PatientController
         return patientService.getPatient(id);
     }
 
+    /**
+     *
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping
-    public List<Patient> getPatients()
-    {
-        return patientService.getAllPatients();
+    public List<Patient> getPatients() throws NotFoundException {
+
+        List<Patient> patientListDb = patientService.getAllPatients();
+        if(patientListDb == null)
+        {
+            throw new NotFoundException("There are no emails in the database.");
+        }
+        return patientListDb;
     }
 
+    /**
+     *
+     * @param patient
+     * @return
+     */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public Patient savePatient(@RequestBody Patient patient)
@@ -58,12 +75,27 @@ public class PatientController
         return patient;
     }
 
+    /**
+     *
+     * @param id
+     * @param patient
+     * @return
+     * @throws MethodNotAllowedException
+     */
     @PostMapping(value="/{id}")
     public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
     }
 
+    /**
+     *
+     * @param id
+     * @param patient
+     * @return
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     @PutMapping(value="/{id}")
     public Patient updatePatient(@PathVariable("id") Long id, @RequestBody Patient patient) throws BadRequestException, NotFoundException
     {
@@ -83,24 +115,14 @@ public class PatientController
         return patientService.updatePatient(patientDb);
     }
 
-    @DeleteMapping(value="/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deletePatient(@PathVariable("id") Long id) throws NotFoundException
-    {
-        Patient patient = patientService.getPatient(id);
-        if(patient == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
-        }
-        patientService.deletePatient(patient);
-    }
-
-    @DeleteMapping
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteAllPatients()
-    {
-        patientService.deleteAllPatients();
-    }
-
+    /**
+     *
+     * @param paitentid
+     * @param email
+     * @return
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     @PutMapping(value="/{paitentid}/emails")
     public Patient addEmail(@PathVariable("paitentid") Long paitentid, @RequestBody Email email) throws BadRequestException, NotFoundException
     {
@@ -118,5 +140,31 @@ public class PatientController
         patientDb = patientService.updatePatient(patientDb);
         patientDb.setEmailId(email.getEmailID());
         return patientDb;
+    }
+
+    /**
+     *
+     * @param id
+     * @throws NotFoundException
+     */
+    @DeleteMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deletePatient(@PathVariable("id") Long id) throws NotFoundException
+    {
+        Patient patient = patientService.getPatient(id);
+        if(patient == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+        }
+        patientService.deletePatient(patient);
+    }
+
+    /**
+     *
+     */
+    @DeleteMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteAllPatients()
+    {
+        patientService.deleteAllPatients();
     }
 }
