@@ -1,7 +1,6 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.exception.BadRequestException;
-import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.control.service.AppointmentService;
@@ -32,18 +31,68 @@ public class AppointmentController {
         this.patientService = patientService;
     }
 
+    /**
+     * Appointment get request using unique id.
+     * @param id appointment unique id
+     * @return an appointment
+     * @throws NotFoundException no appointment with requested id found in database
+     */
     @GetMapping(value="/{id}")
-    public Appointment getAppointment(@PathVariable("id") Long id) throws MethodNotAllowedException
+    public Appointment getAppointment(@PathVariable("id") Long id) throws NotFoundException
     {
-       return appointmentService.getAppointment(id);
+        Appointment appointmentDb = appointmentService.getAppointment(id);
+        if(appointmentDb == null)
+        {
+            throw new NotFoundException(String.format("appointmentDb with id=%s was not found.", id));
+        }
+        return appointmentDb;
     }
 
+    /**
+     * Appointment get request
+     * @return all appointments
+     * @throws NotFoundException no appointments found in the database
+     */
     @GetMapping()
-    public List<Appointment> getAllAppointments()
+    public List<Appointment> getAllAppointments() throws NotFoundException
     {
-       return appointmentService.getAllAppointments();
+        List<Appointment> appointmentListDb = appointmentService.getAllAppointments();
+        if(appointmentListDb == null)
+        {
+            throw new NotFoundException("There are no appointments in the database.");
+        }
+        return appointmentListDb;
     }
 
+    /**
+     *
+     * @param patientid
+     * @param doctorid
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/filter")
+    public List<Appointment> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
+    {
+        Doctor doctorDb = doctorService.getDoctor(doctorid);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
+        }
+
+        Patient patientDB = patientService.getPatient(patientid);
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
+        }
+
+        return appointmentService.findAllByDoctorAndPatient(doctorDb, patientDB);
+    }
+
+    /**
+     * Appointment post request
+     * @param appointment
+     * @return the saved appointment
+     * @throws NotFoundException if the appointment targets are not in the database
+     */
     @PostMapping()
     @ResponseStatus(value = HttpStatus.CREATED)
     public Appointment postAppointment(@RequestBody Appointment appointment)
@@ -72,6 +121,14 @@ public class AppointmentController {
         return appointmentDB;
     }
 
+    /**
+     *
+     * @param id
+     * @param appointment
+     * @return
+     * @throws BadRequestException
+     * @throws NotFoundException
+     */
     @PutMapping(value="/{id}")
     public Appointment updateAppointment(@PathVariable("id") Long id, @RequestBody Appointment appointment) throws BadRequestException, NotFoundException
     {
@@ -103,6 +160,11 @@ public class AppointmentController {
         return appointmentService.updateAppointment(appointmentDb);
     }
 
+    /**
+     *
+     * @param id
+     * @throws NotFoundException
+     */
     @DeleteMapping(value="/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deleteAppointment(@PathVariable Long id) throws NotFoundException
@@ -114,26 +176,13 @@ public class AppointmentController {
         appointmentService.deleteAppoinment(appointmentDb);
     }
 
+    /**
+     *
+     */
     @DeleteMapping
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteAllAppoinments()
+    public void deleteAllAppointments()
     {
         appointmentService.deleteAllAppoinments();
-    }
-
-    @GetMapping(value="/filter")
-    public List<Appointment> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
-    {
-        Doctor doctorDb = doctorService.getDoctor(doctorid);
-        if(doctorDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
-        }
-
-        Patient patientDB = patientService.getPatient(patientid);
-        if(patientDB == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
-        }
-
-        return appointmentService.findAllByDoctorAndPatient(doctorDb, patientDB);
     }
 }
