@@ -4,14 +4,16 @@ import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
-import com.healthcare.main.control.service.EmailService;
-import com.healthcare.main.entity.model.Email;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 
 
@@ -20,13 +22,13 @@ import java.util.List;
 public class PatientController
 {
     private PatientService patientService;
-    private EmailService emailService;
+    private JavaMailSender javaMailSender;
 
     @Autowired
-    public PatientController(PatientService patientService,  EmailService emailService)
+    public PatientController(PatientService patientService,  JavaMailSender javaMailSender)
     {
         this.patientService = patientService;
-        this.emailService = emailService;
+        this.javaMailSender = javaMailSender;
     }
 
     /**
@@ -71,8 +73,9 @@ public class PatientController
     @ResponseStatus(value = HttpStatus.CREATED)
     public Patient savePatient(@RequestBody Patient patient)
     {
-        patientService.savePatient(patient);
-        return patient;
+        Patient patientDb = patientService.savePatient(patient);
+        sendEmail(patientDb);
+        return patientDb;
     }
 
     /**
@@ -117,33 +120,6 @@ public class PatientController
 
     /**
      *
-     * @param paitentid
-     * @param email
-     * @return
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    @PutMapping(value="/{paitentid}/emails")
-    public Patient addEmail(@PathVariable("paitentid") Long paitentid, @RequestBody Email email) throws BadRequestException, NotFoundException
-    {
-        Patient patientDb = patientService.getPatient(paitentid);
-        if(patientDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", paitentid));
-        }
-
-        Email emailDb = emailService.getEmail(email.getEmailID());
-        if(emailDb == null){
-            throw new NotFoundException(String.format("Email with id=%s was not found.", email.getEmailID()));
-        }
-
-        patientDb.setEmail(emailDb);
-        patientDb = patientService.updatePatient(patientDb);
-        patientDb.setEmailId(email.getEmailID());
-        return patientDb;
-    }
-
-    /**
-     *
      * @param id
      * @throws NotFoundException
      */
@@ -166,5 +142,24 @@ public class PatientController
     public void deleteAllPatients()
     {
         patientService.deleteAllPatients();
+    }
+
+    /**
+     *
+     * @param patient
+     */
+    private void sendEmail(Patient patient)
+    {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            mimeMessageHelper.setTo(patient.getEmail().getEmail());
+            mimeMessageHelper.setSubject("Account created");
+            mimeMessageHelper.setText(String.format("Patient name: %s", patient.getFirstName() + patient.getLastName()));
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

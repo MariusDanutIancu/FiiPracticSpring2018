@@ -4,14 +4,16 @@ import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
-import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
-import com.healthcare.main.entity.model.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 
 @RestController
@@ -19,17 +21,17 @@ import java.util.List;
 public class DoctorController
 {
     private DoctorService doctorService;
-    private EmailService emailService;
+    private JavaMailSender javaMailSender;
 
     @Autowired
-    public DoctorController(DoctorService doctorService,  EmailService emailService) {
+    public DoctorController(DoctorService doctorService, JavaMailSender javaMailSender) {
         this.doctorService = doctorService;
-        this.emailService = emailService;
+        this.javaMailSender = javaMailSender;
     }
 
     /**
      *
-      * @param id
+     * @param id
      * @return
      * @throws NotFoundException
      */
@@ -62,14 +64,16 @@ public class DoctorController
 
     /**
      *
-      * @param doctor
+     * @param doctor
      * @return
      */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public Doctor saveDoctor(@RequestBody Doctor doctor)
     {
-        return doctorService.saveDoctor(doctor);
+        Doctor doctorDb = doctorService.saveDoctor(doctor);
+        sendEmail(doctorDb);
+        return doctorDb;
     }
 
     /**
@@ -111,33 +115,6 @@ public class DoctorController
 
     /**
      *
-     * @param doctorid
-     * @param email
-     * @return
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    @PutMapping(value="/{doctorid}/emails")
-    public Doctor addEmail(@PathVariable("doctorid") Long doctorid, @RequestBody Email email) throws BadRequestException, NotFoundException
-    {
-        Doctor doctorDb = doctorService.getDoctor(doctorid);
-        if(doctorDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
-        }
-
-        Email emailDb = emailService.getEmail(email.getEmailID());
-        if(emailDb == null){
-            throw new NotFoundException(String.format("Email with id=%s was not found.", email.getEmailID()));
-        }
-
-        doctorDb.setEmail(emailDb);
-        doctorDb = doctorService.updateDoctor(doctorDb);
-        doctorDb.setEmailId(email.getEmailID());
-        return doctorDb;
-    }
-
-    /**
-     *
      * @param id
      * @throws NotFoundException
      */
@@ -160,5 +137,24 @@ public class DoctorController
     public void deleteAllDoctors()
     {
         doctorService.deleteAllDoctors();
+    }
+
+    /**
+     *
+     * @param doctor
+     */
+    private void sendEmail(Doctor doctor)
+    {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            mimeMessageHelper.setTo(doctor.getEmail().getEmail());
+            mimeMessageHelper.setSubject("Account created");
+            mimeMessageHelper.setText(String.format("Doctor name: %s", doctor.getFirstName() + doctor.getLastName()));
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

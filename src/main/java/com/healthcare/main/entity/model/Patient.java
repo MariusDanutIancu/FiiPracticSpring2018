@@ -1,7 +1,5 @@
 package com.healthcare.main.entity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +10,7 @@ import java.util.Set;
 public class Patient
 {
     @Id
-    @Column(name="PatientID")
+    @Column(name="patient_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long PatientID;
 
@@ -37,17 +35,14 @@ public class Patient
     @Column(name = "MedicalTreatment")
     private String MedicalTreatment;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "email_id")
+    private Email email;
+
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy = "patient")
     private Set<Appointment> appointments = new HashSet<>();
-
-    @OneToOne
-    @JoinColumn(name = "EmailID")
-    private Email email;
-
-    @Transient
-    private Long emailId;
 
     public Long getPatientID() {
         return PatientID;
@@ -102,7 +97,7 @@ public class Patient
     }
 
     public void setMalady(String malady) {
-        this.Malady = malady;
+        Malady = malady;
     }
 
     public String getMedicalTreatment() {
@@ -110,25 +105,9 @@ public class Patient
     }
 
     public void setMedicalTreatment(String medicalTreatment) {
-        this.MedicalTreatment = medicalTreatment;
+        MedicalTreatment = medicalTreatment;
     }
 
-    public Set<Appointment> getAppointments() {
-
-        for(Appointment ap:this.appointments)
-        {
-            ap.setPatientID(ap.getPatient().getPatientID());
-            ap.setDoctorID(ap.getDoctor().getDoctorID());
-        }
-
-        return appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    @JsonIgnore
     public Email getEmail() {
         return email;
     }
@@ -137,11 +116,11 @@ public class Patient
         this.email = email;
     }
 
-    public Long getEmailId() {
-        return emailId;
+    public Set<Appointment> getAppointments() {
+        return appointments;
     }
 
-    public void setEmailId(Long emailId) {
-        this.emailId = emailId;
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

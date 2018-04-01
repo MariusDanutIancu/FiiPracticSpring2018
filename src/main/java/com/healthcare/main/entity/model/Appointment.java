@@ -1,15 +1,16 @@
 package com.healthcare.main.entity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name="Appointment")
+@JsonIgnoreProperties(value = {"patient", "doctor"})
 public class Appointment
 {
     @Id
-    @Column(name = "AppointmentID")
+    @Column(name = "appointment_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long AppointmentID;
 
@@ -17,52 +18,19 @@ public class Appointment
     private String Description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DoctorID", nullable = false)
+    @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PatientID", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
-    @Transient
-    private Long DoctorID;
-
-    @Transient
-    private Long PatientID;
-
-    public Appointment() { }
-
-    public Long getDoctorID() {
-        return DoctorID;
-    }
-
-    public void setDoctorID(Long doctorID) {
-        DoctorID = doctorID;
-    }
-
-    public Long getPatientID() {
-        return PatientID;
-    }
-
-    public void setPatientID(Long patientID) {
-        PatientID = patientID;
-    }
-
-    @JsonIgnore
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
 
     public Long getAppointmentID() {
         return AppointmentID;
     }
 
-    public void setAppointmentID(Long appoinmentID) {
-        AppointmentID = appoinmentID;
+    public void setAppointmentID(Long appointmentID) {
+        AppointmentID = appointmentID;
     }
 
     public String getDescription() {
@@ -73,13 +41,20 @@ public class Appointment
         Description = description;
     }
 
-    @JsonIgnore
     public Doctor getDoctor() {
         return doctor;
     }
 
     public void setDoctor(Doctor doctor) {
         this.doctor = doctor;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }
 

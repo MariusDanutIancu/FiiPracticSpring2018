@@ -1,7 +1,5 @@
 package com.healthcare.main.entity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +9,7 @@ import java.util.Set;
 public class Doctor
 {
     @Id
-    @Column(name = "DoctorID")
+    @Column(name = "doctor_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long DoctorID;
 
@@ -33,17 +31,14 @@ public class Doctor
     @Column(name = "Specialization")
     private String Specialization;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "email_id")
+    private Email email;
+
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy = "doctor")
     private Set<Appointment> appointments = new HashSet<>();
-
-    @OneToOne
-    @JoinColumn(name = "EmailID")
-    private Email email;
-
-    @Transient
-    private Long emailId;
 
     public Long getDoctorID() {
         return DoctorID;
@@ -67,14 +62,6 @@ public class Doctor
 
     public void setLastName(String lastName) {
         LastName = lastName;
-    }
-
-    public String getSpecialization() {
-        return Specialization;
-    }
-
-    public void setSpecialization(String specialization) {
-        Specialization = specialization;
     }
 
     public int getAge() {
@@ -101,22 +88,14 @@ public class Doctor
         PhoneNumber = phoneNumber;
     }
 
-    public Set<Appointment> getAppointments() {
-
-        for(Appointment ap:this.appointments)
-        {
-            ap.setPatientID(ap.getPatient().getPatientID());
-            ap.setDoctorID(ap.getDoctor().getDoctorID());
-        }
-
-        return appointments;
+    public String getSpecialization() {
+        return Specialization;
     }
 
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
+    public void setSpecialization(String specialization) {
+        Specialization = specialization;
     }
 
-    @JsonIgnore
     public Email getEmail() {
         return email;
     }
@@ -125,19 +104,11 @@ public class Doctor
         this.email = email;
     }
 
-    public Long getEmailId() {
-        try
-        {
-            emailId = email.getEmailID();
-        }
-        catch (NullPointerException e)
-        {
-            return null;
-        }
-        return emailId;
+    public Set<Appointment> getAppointments() {
+        return appointments;
     }
 
-    public void setEmailId(Long emailId) {
-        this.emailId = emailId;
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

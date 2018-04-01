@@ -28,10 +28,4 @@ public class ObjectMapper {
         appointmentDB.setDoctor(appointmentRequest.getDoctor());
         appointmentDB.setPatient(appointmentRequest.getPatient());
     }
-
-    public static void map2EmailDb(Email emailDB, Email emailRequest)
-    {
-        emailDB.setEmail(emailRequest.getEmail());
-        emailDB.setDoctor(emailRequest.getDoctor());
-    }
 }
