@@ -27,8 +27,23 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
-    public List<Appointment> getAllAppointments() {
+    public List<Appointment> getAppointments() {
         return appointmentRepository.findAll();
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsByPatient(Patient patient) {
+        return appointmentRepository.findAllByPatient(patient);
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsByDoctor(Doctor doctor) {
+        return appointmentRepository.findAllByDoctor(doctor);
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient) {
+        return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
     }
 
     @Override
@@ -37,26 +52,13 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
-    public Appointment updateAppointment(Appointment appointment)
-    {
-        return appointmentRepository.save(appointment);
-    }
-
-    @Override
-    public void deleteAppointment(Appointment appointment)
-    {
+    public void deleteAppointment(Appointment appointment) {
         appointmentRepository.delete(appointment);
+
     }
 
     @Override
-    public void deleteAllAppointments()
-    {
+    public void deleteAppointments() {
         appointmentRepository.deleteAll();
-    }
-
-    @Override
-    public List<Appointment> findAllByDoctorAndPatient(Doctor doctor, Patient patient)
-    {
-        return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
     }
 }
