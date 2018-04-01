@@ -71,7 +71,7 @@ public class AppointmentController {
      * @return
      * @throws NotFoundException
      */
-    @GetMapping(value="/filter")
+    @GetMapping(value="/filter", params = { "patientid", "doctorid" })
     public List<Appointment> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
         Doctor doctorDb = doctorService.getDoctor(doctorid);
@@ -93,7 +93,7 @@ public class AppointmentController {
      * @return
      * @throws NotFoundException
      */
-    @GetMapping(value="/filter")
+    @GetMapping(value="/filter", params = "doctorid" )
     public List<Appointment> findByDoctor(@RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
         Doctor doctorDb = doctorService.getDoctor(doctorid);
@@ -110,7 +110,7 @@ public class AppointmentController {
      * @return
      * @throws NotFoundException
      */
-    @GetMapping(value="/filter")
+    @GetMapping(value="/filter", params = "patientid")
     public List<Appointment> findByPatient(@RequestParam("patientid") Long patientid) throws NotFoundException
     {
         Patient patientDB = patientService.getPatient(patientid);
