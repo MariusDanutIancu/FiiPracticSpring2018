@@ -1,72 +1,19 @@
 package com.healthcare.main.entity.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 @Entity
-@Table(name="Patient")
-public class Patient
+@Table(name="patient")
+public class Patient extends Person
 {
-    @Id
-    @Column(name="patient_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long PatientID;
-
-    @Column(name = "FirstName", length = 40)
-    private String FirstName;
-
-    @Column(name = "LastName", length = 40)
-    private String LastName;
-
     @Column(name = "Age")
+    @Digits(integer=3, fraction=0)
+    @Min(1)
+    @Max(150)
     private int Age;
-
-    @Column(name = "Sex")
-    private String Sex;
-
-    @Column(name = "PhoneNumber")
-    private String PhoneNumber;
-
-    @Column(name = "Malady")
-    private String Malady;
-
-    @Column(name = "MedicalTreatment")
-    private String MedicalTreatment;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "email_id")
-    private Email email;
-
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "patient")
-    private Set<Appointment> appointments = new HashSet<>();
-
-    public Long getPatientID() {
-        return PatientID;
-    }
-
-    public void setPatientID(Long patientID) {
-        PatientID = patientID;
-    }
-
-    public String getFirstName() {
-        return FirstName;
-    }
-
-    public void setFirstName(String firstName) {
-        FirstName = firstName;
-    }
-
-    public String getLastName() {
-        return LastName;
-    }
-
-    public void setLastName(String lastName) {
-        LastName = lastName;
-    }
 
     public int getAge() {
         return Age;
@@ -74,53 +21,5 @@ public class Patient
 
     public void setAge(int age) {
         Age = age;
-    }
-
-    public String getSex() {
-        return Sex;
-    }
-
-    public void setSex(String sex) {
-        Sex = sex;
-    }
-
-    public String getPhoneNumber() {
-        return PhoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        PhoneNumber = phoneNumber;
-    }
-
-    public String getMalady() {
-        return Malady;
-    }
-
-    public void setMalady(String malady) {
-        Malady = malady;
-    }
-
-    public String getMedicalTreatment() {
-        return MedicalTreatment;
-    }
-
-    public void setMedicalTreatment(String medicalTreatment) {
-        MedicalTreatment = medicalTreatment;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public void setEmail(Email email) {
-        this.email = email;
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
     }
 }

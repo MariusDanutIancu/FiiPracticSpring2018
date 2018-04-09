@@ -1,114 +1,13 @@
 package com.healthcare.main.entity.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="Doctor")
-public class Doctor
+@Table(name="doctor")
+public class Doctor extends Person
 {
-    @Id
-    @Column(name = "doctor_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long DoctorID;
-
-    @Column(name = "FirstName", length = 20)
-    private String FirstName;
-
-    @Column(name = "LastName", length = 20)
-    private String LastName;
-
-    @Column(name = "Age")
-    private int Age;
-
-    @Column(name = "Sex")
-    private String Sex;
-
-    @Column(name = "PhoneNumber")
-    private String PhoneNumber;
-
-    @Column(name = "Specialization")
-    private String Specialization;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "email_id")
-    private Email email;
-
-    @OneToMany(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            mappedBy = "doctor")
-    private Set<Appointment> appointments = new HashSet<>();
-
-    public Long getDoctorID() {
-        return DoctorID;
-    }
-
-    public void setDoctorID(Long doctorID) {
-        DoctorID = doctorID;
-    }
-
-    public String getFirstName() {
-        return FirstName;
-    }
-
-    public void setFirstName(String firstName) {
-        FirstName = firstName;
-    }
-
-    public String getLastName() {
-        return LastName;
-    }
-
-    public void setLastName(String lastName) {
-        LastName = lastName;
-    }
-
-    public int getAge() {
-        return Age;
-    }
-
-    public void setAge(int age) {
-        Age = age;
-    }
-
-    public String getSex() {
-        return Sex;
-    }
-
-    public void setSex(String sex) {
-        Sex = sex;
-    }
-
-    public String getPhoneNumber() {
-        return PhoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        PhoneNumber = phoneNumber;
-    }
-
-    public String getSpecialization() {
-        return Specialization;
-    }
-
-    public void setSpecialization(String specialization) {
-        Specialization = specialization;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public void setEmail(Email email) {
-        this.email = email;
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
-    }
+    @Column(name = "function")
+    @Size(min = 2, max = 20, message = "Function must be between 2 and 20 characters")
+    private String function;
 }

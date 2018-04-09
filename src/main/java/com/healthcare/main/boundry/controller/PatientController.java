@@ -31,135 +31,135 @@ public class PatientController
         this.javaMailSender = javaMailSender;
     }
 
-    /**
-     *
-     * @param id
-     * @return
-     * @throws NotFoundException
-     */
-    @GetMapping(value="/{id}")
-    public Patient getPatient(@PathVariable("id") Long id) throws NotFoundException
-    {
-        Patient patient = patientService.getPatient(id);
-        if(patient == null)
-        {
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
-        }
-        return patientService.getPatient(id);
-    }
-
-    /**
-     *
-     * @return
-     * @throws NotFoundException
-     */
-    @GetMapping
-    public List<Patient> getPatients() throws NotFoundException {
-
-        List<Patient> patientListDb = patientService.getAllPatients();
-        if(patientListDb.size() == 0)
-        {
-            throw new NotFoundException("There are no emails in the database.");
-        }
-        return patientListDb;
-    }
-
-    /**
-     *
-     * @param patient
-     * @return
-     */
-    @PostMapping
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public Patient savePatient(@RequestBody Patient patient)
-    {
-        Patient patientDb = patientService.savePatient(patient);
-        sendEmail(patientDb);
-        return patientDb;
-    }
-
-    /**
-     *
-     * @param id
-     * @param patient
-     * @return
-     * @throws MethodNotAllowedException
-     */
-    @PostMapping(value="/{id}")
-    public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
-    {
-        throw new MethodNotAllowedException("Method is not allowed.");
-    }
-
-    /**
-     *
-     * @param id
-     * @param patient
-     * @return
-     * @throws BadRequestException
-     * @throws NotFoundException
-     */
-    @PutMapping(value="/{id}")
-    public Patient updatePatient(@PathVariable("id") Long id, @RequestBody Patient patient) throws BadRequestException, NotFoundException
-    {
-        if(!id.equals(patient.getPatientID()))
-        {
-            throw new BadRequestException("The id is not the same with id from object");
-        }
-
-        Patient patientDb = patientService.getPatient(id);
-
-        if(patientDb == null)
-        {
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
-        }
-
-        ObjectMapper.map2PatientDb(patientDb, patient);
-        return patientService.updatePatient(patientDb);
-    }
-
-    /**
-     *
-     * @param id
-     * @throws NotFoundException
-     */
-    @DeleteMapping(value="/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deletePatient(@PathVariable("id") Long id) throws NotFoundException
-    {
-        Patient patient = patientService.getPatient(id);
-        if(patient == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
-        }
-        patientService.deletePatient(patient);
-    }
-
-    /**
-     *
-     */
-    @DeleteMapping
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteAllPatients()
-    {
-        patientService.deleteAllPatients();
-    }
-
-    /**
-     *
-     * @param patient
-     */
-    private void sendEmail(Patient patient)
-    {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-
-        try {
-            mimeMessageHelper.setTo(patient.getEmail().getEmail());
-            mimeMessageHelper.setSubject("Account created");
-            mimeMessageHelper.setText(String.format("Patient name: %s", patient.getFirstName() + patient.getLastName()));
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     *
+//     * @param id
+//     * @return
+//     * @throws NotFoundException
+//     */
+//    @GetMapping(value="/{id}")
+//    public Patient getPatient(@PathVariable("id") Long id) throws NotFoundException
+//    {
+//        Patient patient = patientService.getPatient(id);
+//        if(patient == null)
+//        {
+//            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+//        }
+//        return patientService.getPatient(id);
+//    }
+//
+//    /**
+//     *
+//     * @return
+//     * @throws NotFoundException
+//     */
+//    @GetMapping
+//    public List<Patient> getPatients() throws NotFoundException {
+//
+//        List<Patient> patientListDb = patientService.getAllPatients();
+//        if(patientListDb.size() == 0)
+//        {
+//            throw new NotFoundException("There are no emails in the database.");
+//        }
+//        return patientListDb;
+//    }
+//
+//    /**
+//     *
+//     * @param patient
+//     * @return
+//     */
+//    @PostMapping
+//    @ResponseStatus(value = HttpStatus.CREATED)
+//    public Patient savePatient(@RequestBody Patient patient)
+//    {
+//        Patient patientDb = patientService.savePatient(patient);
+//        sendEmail(patientDb);
+//        return patientDb;
+//    }
+//
+//    /**
+//     *
+//     * @param id
+//     * @param patient
+//     * @return
+//     * @throws MethodNotAllowedException
+//     */
+//    @PostMapping(value="/{id}")
+//    public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
+//    {
+//        throw new MethodNotAllowedException("Method is not allowed.");
+//    }
+//
+//    /**
+//     *
+//     * @param id
+//     * @param patient
+//     * @return
+//     * @throws BadRequestException
+//     * @throws NotFoundException
+//     */
+//    @PutMapping(value="/{id}")
+//    public Patient updatePatient(@PathVariable("id") Long id, @RequestBody Patient patient) throws BadRequestException, NotFoundException
+//    {
+//        if(!id.equals(patient.getPatientID()))
+//        {
+//            throw new BadRequestException("The id is not the same with id from object");
+//        }
+//
+//        Patient patientDb = patientService.getPatient(id);
+//
+//        if(patientDb == null)
+//        {
+//            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+//        }
+//
+//        ObjectMapper.map2PatientDb(patientDb, patient);
+//        return patientService.updatePatient(patientDb);
+//    }
+//
+//    /**
+//     *
+//     * @param id
+//     * @throws NotFoundException
+//     */
+//    @DeleteMapping(value="/{id}")
+//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+//    public void deletePatient(@PathVariable("id") Long id) throws NotFoundException
+//    {
+//        Patient patient = patientService.getPatient(id);
+//        if(patient == null){
+//            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+//        }
+//        patientService.deletePatient(patient);
+//    }
+//
+//    /**
+//     *
+//     */
+//    @DeleteMapping
+//    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+//    public void deleteAllPatients()
+//    {
+//        patientService.deleteAllPatients();
+//    }
+//
+//    /**
+//     *
+//     * @param patient
+//     */
+//    private void sendEmail(Patient patient)
+//    {
+//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+//
+//        try {
+//            mimeMessageHelper.setTo(patient.getEmail().getEmail());
+//            mimeMessageHelper.setSubject("Account created");
+//            mimeMessageHelper.setText(String.format("Patient name: %s", patient.getFirstName() + patient.getLastName()));
+//            javaMailSender.send(mimeMessage);
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
