@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -39,23 +41,24 @@ public class AppointmentController {
         this.javaMailSender = javaMailSender;
     }
 
-//    /**
-//     * Appointment get request using unique id.
-//     * @param id appointment unique id
-//     * @return an appointment
-//     * @throws NotFoundException no appointment with requested id found in database
-//     */
-//    @GetMapping(value="/{id}")
-//    public Appointment getAppointment(@PathVariable("id") Long id) throws NotFoundException
-//    {
-//        Appointment appointmentDb = appointmentService.getAppointment(id);
-//        if(appointmentDb == null)
-//        {
-//            throw new NotFoundException(String.format("appointmentDb with id=%s was not found.", id));
-//        }
-//        return appointmentDb;
-//    }
-//
+    /**
+     * Appointment get request using unique id.
+     * @param id appointment unique id
+     * @return an appointment
+     * @throws NotFoundException no appointment with requested id found in database
+     */
+    @GetMapping(value="/{id}")
+    public AppointmentDto getAppointment(@PathVariable("id") Long id) throws NotFoundException
+    {
+        Appointment appointmentDb = appointmentService.getAppointment(id);
+        if(appointmentDb == null)
+        {
+            throw new NotFoundException(String.format("appointmentDb with id=%s was not found.", id));
+        }
+
+        return AppointmentMapper.MAPPER.fromAppointment(appointmentDb);
+    }
+
 //    /**
 //     * Appointment get request
 //     * @return all appointments
@@ -72,62 +75,86 @@ public class AppointmentController {
 //        return appointmentListDb;
 //    }
 //
-//    /**
-//     *
-//     * @param patientid
-//     * @param doctorid
-//     * @return
-//     * @throws NotFoundException
-//     */
-//    @GetMapping(value="/filter", params = { "patientid", "doctorid" })
-//    public List<Appointment> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
-//    {
-//        Doctor doctorDb = doctorService.getDoctor(doctorid);
-//        if(doctorDb == null){
-//            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
-//        }
-//
-//        Patient patientDB = patientService.getPatient(patientid);
-//        if(patientDB == null){
-//            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
-//        }
-//
-//        return appointmentService.getAppointmentsDoctorAndPatient(doctorDb, patientDB);
-//    }
-//
-//    /**
-//     *
-//     * @param doctorid
-//     * @return
-//     * @throws NotFoundException
-//     */
-//    @GetMapping(value="/filter", params = "doctorid" )
-//    public List<Appointment> findByDoctor(@RequestParam("doctorid") Long doctorid) throws NotFoundException
-//    {
-//        Doctor doctorDb = doctorService.getDoctor(doctorid);
-//        if(doctorDb == null){
-//            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
-//        }
-//
-//        return appointmentService.getAppointmentsByDoctor(doctorDb);
-//    }
-//
-//    /**
-//     *
-//     * @param patientid
-//     * @return
-//     * @throws NotFoundException
-//     */
-//    @GetMapping(value="/filter", params = "patientid")
-//    public List<Appointment> findByPatient(@RequestParam("patientid") Long patientid) throws NotFoundException
-//    {
-//        Patient patientDB = patientService.getPatient(patientid);
-//        if(patientDB == null){
-//            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
-//        }
-//
-//        return appointmentService.getAppointmentsByPatient(patientDB);
-//    }
+    /**
+     *
+     * @param patientid
+     * @param doctorid
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/filter", params = { "patientid", "doctorid" })
+    public List<AppointmentDto> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
+    {
+        Doctor doctorDb = doctorService.getDoctor(doctorid);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
+        }
+
+        Patient patientDB = patientService.getPatient(patientid);
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointmentsDoctorAndPatient(doctorDb, patientDB);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
+
+    /**
+     *
+     * @param doctorid
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/filter", params = "doctorid" )
+    public List<AppointmentDto> findByDoctor(@RequestParam("doctorid") Long doctorid) throws NotFoundException
+    {
+        Doctor doctorDb = doctorService.getDoctor(doctorid);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointmentsByDoctor(doctorDb);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
+
+    /**
+     *
+     * @param patientid
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/filter", params = "patientid")
+    public List<AppointmentDto> findByPatient(@RequestParam("patientid") Long patientid) throws NotFoundException
+    {
+        Patient patientDB = patientService.getPatient(patientid);
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", patientid));
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointmentsByPatient(patientDB);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
 
     /**
      * Appointment post request
@@ -151,12 +178,12 @@ public class AppointmentController {
             throw new NotFoundException(String.format("Patient with id=%s was not found.", appointmentDto.getPatient_id()));
         }
 
-        Appointment appointment = AppointmentMapper.MAPPER.toAppointment(appointmentDto);
+        Appointment appointment = AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto);
         appointment = appointmentService.saveAppointment(appointment);
 
-        sendEmail(doctorDB, appointment.getId());
-        sendEmail(patientDB, appointment.getId());
-        return AppointmentMapper.MAPPER.fromAppoinment(appointment);
+        //sendEmail(doctorDB, appointment.getId());
+        //sendEmail(patientDB, appointment.getId());
+        return AppointmentMapper.MAPPER.fromAppointment(appointment);
     }
 
 //    /**

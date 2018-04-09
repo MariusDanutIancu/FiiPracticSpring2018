@@ -73,7 +73,7 @@ public class PatientController
     {
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
-        this.sendEmail(patient);
+        //this.sendEmail(patient);
         return PatientMapper.MAPPER.fromPatient(patient);
     }
 

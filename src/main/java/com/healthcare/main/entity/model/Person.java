@@ -8,7 +8,6 @@ import javax.persistence.MappedSuperclass;
 public abstract class Person {
 
     @Id
-    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -21,15 +20,15 @@ public abstract class Person {
     private String lastName;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @PrimaryKeyJoinColumn
     private PhoneNumber phoneNumber;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @PrimaryKeyJoinColumn
     private Address address;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id")
+    @PrimaryKeyJoinColumn
     private Email email;
 
     public Long getId() {

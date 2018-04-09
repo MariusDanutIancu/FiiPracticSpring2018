@@ -31,20 +31,20 @@ public class AppointmentServiceImpl implements AppointmentService{
         return appointmentRepository.findAll();
     }
 
-//    @Override
-//    public List<Appointment> getAppointmentsByPatient(Patient patient) {
-//        return appointmentRepository.findAllByPatient(patient);
-//    }
-//
-//    @Override
-//    public List<Appointment> getAppointmentsByDoctor(Doctor doctor) {
-//        return appointmentRepository.findAllByDoctor(doctor);
-//    }
-//
-//    @Override
-//    public List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient) {
-//        return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
-//    }
+    @Override
+    public List<Appointment> getAppointmentsByPatient(Patient patient) {
+        return appointmentRepository.findAllByPatient(patient);
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsByDoctor(Doctor doctor) {
+        return appointmentRepository.findAllByDoctor(doctor);
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient) {
+        return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
+    }
 
     @Override
     public Appointment saveAppointment(Appointment appointment) {
