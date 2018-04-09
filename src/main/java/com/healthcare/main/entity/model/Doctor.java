@@ -10,4 +10,13 @@ public class Doctor extends Person
     @Column(name = "function")
     @Size(min = 2, max = 20, message = "Function must be between 2 and 20 characters")
     private String function;
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
 }

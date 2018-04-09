@@ -2,9 +2,7 @@ package com.healthcare.main.boundry.mapper;
 
 import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
-import com.healthcare.main.entity.model.Email;
 import com.healthcare.main.entity.model.Patient;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.Appinfo;
 
 public class ObjectMapper {
 

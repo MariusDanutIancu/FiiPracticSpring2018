@@ -7,26 +7,27 @@ import javax.persistence.*;
 public class Email
 {
     @Id
-    @Column(name = "email_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long EmailID;
+    private Long id;
 
-    @Column(name = "Email", length = 100)
-    private String Email;
+    @Column(name = "email")
+    @javax.validation.constraints.Email
+    private String email;
 
-    public Long getEmailID() {
-        return EmailID;
+    public Long getId() {
+        return id;
     }
 
-    public void setEmailID(Long emailID) {
-        EmailID = emailID;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
-        Email = email;
+        this.email = email;
     }
 }

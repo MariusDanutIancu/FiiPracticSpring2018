@@ -1,9 +1,8 @@
 package com.healthcare.main.boundry.controller;
 
-import com.healthcare.main.boundry.exception.MethodNotAllowedException;
-import com.healthcare.main.boundry.mapper.ObjectMapper;
-import com.healthcare.main.boundry.exception.BadRequestException;
+import com.healthcare.main.boundry.dto.DoctorDto;
 import com.healthcare.main.boundry.exception.NotFoundException;
+import com.healthcare.main.boundry.mapper.DoctorMapper;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.List;
 
 @RestController
 @RequestMapping(value="/api/0.1/doctors")
@@ -29,22 +27,24 @@ public class DoctorController
         this.javaMailSender = javaMailSender;
     }
 
-//    /**
-//     *
-//     * @param id
-//     * @return
-//     * @throws NotFoundException
-//     */
-//    @GetMapping(value="/{id}")
-//    public Doctor getDoctor(@PathVariable("id") Long id) throws NotFoundException
-//    {
-//        Doctor doctor = doctorService.getDoctor(id);
-//        if(doctor == null)
-//        {
-//            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
-//        }
-//        return doctor;
-//    }
+    /**
+     *
+     * @param id
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/{id}")
+    public DoctorDto getDoctor(@PathVariable("id") Long id) throws NotFoundException
+    {
+        Doctor doctor = doctorService.getDoctor(id);
+
+        if(doctor == null)
+        {
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+        }
+
+        return DoctorMapper.MAPPER.fromDoctor(doctor);
+    }
 //
 //    /**
 //     *
@@ -62,19 +62,20 @@ public class DoctorController
 //        return doctorListDb;
 //    }
 //
-//    /**
-//     *
-//     * @param doctor
-//     * @return
-//     */
-//    @PostMapping
-//    @ResponseStatus(value = HttpStatus.CREATED)
-//    public Doctor saveDoctor(@RequestBody Doctor doctor)
-//    {
-//        Doctor doctorDb = doctorService.saveDoctor(doctor);
-//        sendEmail(doctorDb);
-//        return doctorDb;
-//    }
+    /**
+     *
+     * @param doctorDto
+     * @return
+     */
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public DoctorDto saveDoctor(@RequestBody DoctorDto doctorDto)
+    {
+        Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
+        doctor = doctorService.saveDoctor(doctor);
+        this.sendEmail(doctor);
+        return DoctorMapper.MAPPER.fromDoctor(doctor);
+    }
 //
 //    /**
 //     *
@@ -139,22 +140,22 @@ public class DoctorController
 //        doctorService.deleteAllDoctors();
 //    }
 //
-//    /**
-//     *
-//     * @param doctor
-//     */
-//    private void sendEmail(Doctor doctor)
-//    {
-//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-//
-//        try {
-//            mimeMessageHelper.setTo(doctor.getEmail().getEmail());
-//            mimeMessageHelper.setSubject("Account created");
-//            mimeMessageHelper.setText(String.format("Doctor name: %s", doctor.getFirstName() + doctor.getLastName()));
-//            javaMailSender.send(mimeMessage);
-//        } catch (MessagingException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    /**
+     *
+     * @param doctor
+     */
+    private void sendEmail(Doctor doctor)
+    {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            mimeMessageHelper.setTo(doctor.getEmail().getEmail());
+            mimeMessageHelper.setSubject("Account created");
+            mimeMessageHelper.setText(String.format("You can see your data at %s", "http://localhost:8080/api/0.1/doctors/" + doctor.getId()));
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 }

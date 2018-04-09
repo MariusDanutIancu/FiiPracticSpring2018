@@ -62,6 +62,12 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.7.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mapstruct</groupId>
+					<artifactId>mapstruct</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -102,7 +108,7 @@
 
 		<dependency>
 			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId> <!-- use mapstruct-jdk8 for Java 8 or higher -->
+			<artifactId>mapstruct-jdk8</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
 
@@ -110,10 +116,29 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
