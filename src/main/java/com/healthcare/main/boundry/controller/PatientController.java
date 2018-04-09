@@ -1,9 +1,12 @@
 package com.healthcare.main.boundry.controller;
 
+import com.healthcare.main.boundry.dto.PatientDto;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
+import com.healthcare.main.boundry.mapper.DoctorMapper;
 import com.healthcare.main.boundry.mapper.ObjectMapper;
+import com.healthcare.main.boundry.mapper.PatientMapper;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +34,23 @@ public class PatientController
         this.javaMailSender = javaMailSender;
     }
 
-//    /**
-//     *
-//     * @param id
-//     * @return
-//     * @throws NotFoundException
-//     */
-//    @GetMapping(value="/{id}")
-//    public Patient getPatient(@PathVariable("id") Long id) throws NotFoundException
-//    {
-//        Patient patient = patientService.getPatient(id);
-//        if(patient == null)
-//        {
-//            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
-//        }
-//        return patientService.getPatient(id);
-//    }
-//
+    /**
+     *
+     * @param id
+     * @return
+     * @throws NotFoundException
+     */
+    @GetMapping(value="/{id}")
+    public PatientDto getPatient(@PathVariable("id") Long id) throws NotFoundException
+    {
+        Patient patient = patientService.getPatient(id);
+        if(patient == null)
+        {
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+        }
+        return PatientMapper.MAPPER.fromPatient(patient);
+    }
+
 //    /**
 //     *
 //     * @return
@@ -63,21 +66,22 @@ public class PatientController
 //        }
 //        return patientListDb;
 //    }
-//
-//    /**
-//     *
-//     * @param patient
-//     * @return
-//     */
-//    @PostMapping
-//    @ResponseStatus(value = HttpStatus.CREATED)
-//    public Patient savePatient(@RequestBody Patient patient)
-//    {
-//        Patient patientDb = patientService.savePatient(patient);
-//        sendEmail(patientDb);
-//        return patientDb;
-//    }
-//
+
+    /**
+     *
+     * @param patientDto
+     * @return
+     */
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public PatientDto savePatient(@RequestBody PatientDto patientDto)
+    {
+        Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
+        patient = patientService.savePatient(patient);
+        this.sendEmail(patient);
+        return PatientMapper.MAPPER.fromPatient(patient);
+    }
+
 //    /**
 //     *
 //     * @param id
@@ -144,22 +148,22 @@ public class PatientController
 //        patientService.deleteAllPatients();
 //    }
 //
-//    /**
-//     *
-//     * @param patient
-//     */
-//    private void sendEmail(Patient patient)
-//    {
-//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-//
-//        try {
-//            mimeMessageHelper.setTo(patient.getEmail().getEmail());
-//            mimeMessageHelper.setSubject("Account created");
-//            mimeMessageHelper.setText(String.format("Patient name: %s", patient.getFirstName() + patient.getLastName()));
-//            javaMailSender.send(mimeMessage);
-//        } catch (MessagingException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    /**
+     *
+     * @param patient
+     */
+    private void sendEmail(Patient patient)
+    {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            mimeMessageHelper.setTo(patient.getEmail().getEmail());
+            mimeMessageHelper.setSubject("Account created");
+            mimeMessageHelper.setText(String.format("You can see your data at %s", "http://localhost:8080/api/0.1/patients/" + patient.getId()));
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 }

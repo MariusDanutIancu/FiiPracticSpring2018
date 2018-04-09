@@ -13,13 +13,13 @@ public class Patient extends Person
     @Digits(integer=3, fraction=0)
     @Min(1)
     @Max(150)
-    private int Age;
+    private Integer Age;
 
-    public int getAge() {
+    public Integer getAge() {
         return Age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         Age = age;
     }
 }
