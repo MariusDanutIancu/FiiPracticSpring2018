@@ -1,19 +1,24 @@
 package com.healthcare.main.boundry.controller;
 
-import com.healthcare.main.boundry.exception.BadRequestException;
+import com.healthcare.main.boundry.dto.AppointmentDto;
 import com.healthcare.main.boundry.exception.NotFoundException;
-import com.healthcare.main.boundry.mapper.ObjectMapper;
+import com.healthcare.main.boundry.mapper.AppointmentMapper;
 import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Patient;
+import com.healthcare.main.entity.model.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 
 
 @RestController
@@ -23,12 +28,15 @@ public class AppointmentController {
     private AppointmentService appointmentService;
     private DoctorService doctorService;
     private PatientService patientService;
+    private JavaMailSender javaMailSender;
 
     @Autowired
-    public AppointmentController(AppointmentService appointmentService, DoctorService doctorService, PatientService patientService) {
+    public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
+                                 PatientService patientService, JavaMailSender javaMailSender) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
+        this.javaMailSender = javaMailSender;
     }
 
 //    /**
@@ -120,36 +128,37 @@ public class AppointmentController {
 //
 //        return appointmentService.getAppointmentsByPatient(patientDB);
 //    }
-//
-//    /**
-//     * Appointment post request
-//     * @param appointment
-//     * @return the saved appointment
-//     * @throws NotFoundException if the appointment targets are not in the database
-//     */
-//    @PostMapping()
-//    @ResponseStatus(value = HttpStatus.CREATED)
-//    public Appointment postAppointment(@RequestBody Appointment appointment)
-//            throws NotFoundException
-//    {
-//        Doctor doctorDB = doctorService.getDoctor(appointment.getDoctor().getDoctorID());
-//        Patient patientDB = patientService.getPatient(appointment.getPatient().getPatientID());
-//
-//        if(doctorDB == null){
-//            throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointment.getDoctor().getDoctorID()));
-//        }
-//
-//        if(patientDB == null){
-//            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointment.getPatient().getPatientID()));
-//        }
-//
-//        Appointment appointmentDB = new Appointment();
-//        ObjectMapper.map2AppointmentDb(appointmentDB, appointment);
-//        appointmentDB = appointmentService.saveAppointment(appointmentDB);
-//
-//        return appointmentDB;
-//    }
-//
+
+    /**
+     * Appointment post request
+     * @param appointmentDto
+     * @return the saved appointment
+     * @throws NotFoundException if the appointment targets are not in the database
+     */
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public AppointmentDto postAppointment(@RequestBody AppointmentDto appointmentDto)
+            throws NotFoundException
+    {
+        Doctor doctorDB = doctorService.getDoctor(appointmentDto.getDoctor_id());
+        Patient patientDB = patientService.getPatient(appointmentDto.getPatient_id());
+
+        if(doctorDB == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointmentDto.getDoctor_id()));
+        }
+
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointmentDto.getPatient_id()));
+        }
+
+        Appointment appointment = AppointmentMapper.MAPPER.toAppointment(appointmentDto);
+        appointment = appointmentService.saveAppointment(appointment);
+
+        sendEmail(doctorDB, appointment.getId());
+        sendEmail(patientDB, appointment.getId());
+        return AppointmentMapper.MAPPER.fromAppoinment(appointment);
+    }
+
 //    /**
 //     *
 //     * @param id
@@ -211,4 +220,19 @@ public class AppointmentController {
 //    {
 //        appointmentService.deleteAppointments();
 //    }
+
+    private void sendEmail(Person person, Long appointmentId)
+    {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+        try {
+            mimeMessageHelper.setTo(person.getEmail().getEmail());
+            mimeMessageHelper.setSubject("Account created");
+            mimeMessageHelper.setText(String.format("You can see your appointment at %s", "http://localhost:8080/api/0.1/appointments/" + appointmentId));
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
 }

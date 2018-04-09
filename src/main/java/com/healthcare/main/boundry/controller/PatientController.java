@@ -1,11 +1,7 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.PatientDto;
-import com.healthcare.main.boundry.exception.BadRequestException;
-import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
-import com.healthcare.main.boundry.mapper.DoctorMapper;
-import com.healthcare.main.boundry.mapper.ObjectMapper;
 import com.healthcare.main.boundry.mapper.PatientMapper;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.List;
 
 
 @RestController

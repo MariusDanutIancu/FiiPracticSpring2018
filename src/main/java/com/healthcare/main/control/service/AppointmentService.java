@@ -10,9 +10,9 @@ public interface AppointmentService {
 
     Appointment getAppointment(Long id);
     List<Appointment> getAppointments();
-    List<Appointment> getAppointmentsByPatient(Patient patient);
-    List<Appointment> getAppointmentsByDoctor(Doctor doctor);
-    List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient);
+//    List<Appointment> getAppointmentsByPatient(Patient patient);
+//    List<Appointment> getAppointmentsByDoctor(Doctor doctor);
+//    List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient);
     Appointment saveAppointment(Appointment appointment);
     void deleteAppointment(Appointment appointment);
     void deleteAppointments();

@@ -1,43 +1,22 @@
-package com.healthcare.main.entity.model;
+package com.healthcare.main.boundry.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name="Appointment")
-@JsonIgnoreProperties(value = {"patient", "doctor"})
-public class Appointment
-{
-    @Id
-    @Column(name = "appointment_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class AppointmentDto {
 
-    @Column(name = "doctor_id")
+    private Long appointment_id;
     private Long doctor_id;
-
-    @Column(name = "patient_id")
     private Long patient_id;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="start_time")
     private Date startTime;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name="end_time")
     private Date endTime;
-
-    @Column(name = "cause")
     private String cause;
 
-    public Long getId() {
-        return id;
+    public Long getAppointment_id() {
+        return appointment_id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setAppointment_id(Long appointment_id) {
+        this.appointment_id = appointment_id;
     }
 
     public Long getDoctor_id() {
@@ -80,4 +59,3 @@ public class Appointment
         this.cause = cause;
     }
 }
-
