@@ -1,6 +1,7 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.AppointmentDto;
+import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.AppointmentMapper;
 import com.healthcare.main.control.service.AppointmentService;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,7 +165,7 @@ public class AppointmentController {
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public AppointmentDto postAppointment(@RequestBody AppointmentDto appointmentDto)
-            throws NotFoundException
+            throws NotFoundException, BadRequestException
     {
         Doctor doctorDB = doctorService.getDoctor(appointmentDto.getDoctor_id());
         Patient patientDB = patientService.getPatient(appointmentDto.getPatient_id());
@@ -177,6 +177,22 @@ public class AppointmentController {
         if(patientDB == null){
             throw new NotFoundException(String.format("Patient with id=%s was not found.", appointmentDto.getPatient_id()));
         }
+
+        if (appointmentDto.getStartTime().after(appointmentDto.getEndTime()))
+        {
+            throw new BadRequestException(String.format("Start date is after end date %s %s.",
+                    appointmentDto.getStartTime() , appointmentDto.getEndTime()));
+        }
+
+        Integer count = appointmentService.countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(appointmentDto.getStartTime(),
+                appointmentDto.getEndTime(), appointmentDto.getDoctor_id(), appointmentDto.getPatient_id());
+
+        if (count > 0)
+        {
+            throw new BadRequestException(String.format("Interval is already booked %s %s",
+                    appointmentDto.getStartTime() , appointmentDto.getEndTime()));
+        }
+
 
         Appointment appointment = AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto);
         appointment = appointmentService.saveAppointment(appointment);

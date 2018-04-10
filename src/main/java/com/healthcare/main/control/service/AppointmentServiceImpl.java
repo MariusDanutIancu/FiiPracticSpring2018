@@ -7,6 +7,7 @@ import com.healthcare.main.entity.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,7 +20,6 @@ public class AppointmentServiceImpl implements AppointmentService{
     public AppointmentServiceImpl(AppointmentRepository appointmentRepository) {
         this.appointmentRepository = appointmentRepository;
     }
-
 
     @Override
     public Appointment getAppointment(Long id) {
@@ -45,6 +45,12 @@ public class AppointmentServiceImpl implements AppointmentService{
     public List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient) {
         return appointmentRepository.findAllByDoctorAndPatient(doctor, patient);
     }
+
+    @Override
+    public Integer countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(Date startDate, Date endDate, Long doctorId, Long patientId) {
+        return appointmentRepository.countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(startDate, endDate, doctorId, patientId);
+    }
+
 
     @Override
     public Appointment saveAppointment(Appointment appointment) {
