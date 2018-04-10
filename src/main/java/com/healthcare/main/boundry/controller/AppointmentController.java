@@ -242,10 +242,10 @@ public class AppointmentController {
         Appointment appointment = AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto);
         appointment = appointmentService.saveAppointment(appointment);
 
-        sendEmail(doctorDB, "Appoinment set", String.format("You can see your appointment at %s",
-                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
-        sendEmail(patientDB, "Appoinment set", String.format("You can see your appointment at %s",
-                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
+//        sendEmail(doctorDB, "Appoinment set", String.format("You can see your appointment at %s",
+//                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
+//        sendEmail(patientDB, "Appoinment set", String.format("You can see your appointment at %s",
+//                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
         return AppointmentMapper.MAPPER.fromAppointment(appointment);
     }
 

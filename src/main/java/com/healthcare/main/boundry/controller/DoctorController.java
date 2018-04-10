@@ -80,8 +80,8 @@ public class DoctorController
     {
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
-        this.sendEmail(doctor, "Account created", String.format("You can see your data at %s",
-                "http://localhost:8080/api/0.1/doctors/" + doctor.getId()));
+//        this.sendEmail(doctor, "Account created", String.format("You can see your data at %s",
+//                "http://localhost:8080/api/0.1/doctors/" + doctor.getId()));
         return DoctorMapper.MAPPER.fromDoctor(doctor);
     }
 

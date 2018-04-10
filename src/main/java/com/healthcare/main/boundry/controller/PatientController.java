@@ -83,9 +83,9 @@ public class PatientController
     {
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
-        this.sendEmail(patient, "Account created", "Dear "  +patient.getFirstName() + " " +
-                patient.getLastName() + " " + String.format("You can see your data at %s",
-                "http://localhost:8080/api/0.1/patients/" + patient.getId()));
+//        this.sendEmail(patient, "Account created", "Dear "  +patient.getFirstName() + " " +
+//                patient.getLastName() + " " + String.format("You can see your data at %s",
+//                "http://localhost:8080/api/0.1/patients/" + patient.getId()));
         return PatientMapper.MAPPER.fromPatient(patient);
     }
 
