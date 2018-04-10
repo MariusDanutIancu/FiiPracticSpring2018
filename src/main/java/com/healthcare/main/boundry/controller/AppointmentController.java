@@ -55,22 +55,27 @@ public class AppointmentController {
         return AppointmentMapper.MAPPER.fromAppointment(appointmentDb);
     }
 
-//    /**
-//     * Appointment get request
-//     * @return all appointments
-//     * @throws NotFoundException no appointments found in the database
-//     */
-//    @GetMapping()
-//    public List<Appointment> getAllAppointments() throws NotFoundException
-//    {
-//        List<Appointment> appointmentListDb = appointmentService.getAppointments();
-//        if(appointmentListDb.size() == 0)
-//        {
-//            throw new NotFoundException("There are no appointments in the database.");
-//        }
-//        return appointmentListDb;
-//    }
-//
+    /**
+     * Appointment get request
+     * @return all appointments
+     * @throws NotFoundException no appointments found in the database
+     */
+    @GetMapping()
+    public List<AppointmentDto> getAllAppointments() throws NotFoundException
+    {
+        List<Appointment> appointmentListDb = appointmentService.getAppointments();
+        if(appointmentListDb.size() == 0)
+        {
+            throw new NotFoundException("There are no appointments in the database.");
+        }
+        List<AppointmentDto> appointmentDtos = new ArrayList<>();
+        for(Appointment appointment:appointmentListDb)
+        {
+            appointmentDtos.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+        return appointmentDtos;
+    }
+
     /**
      *
      * @param patientid
@@ -152,6 +157,12 @@ public class AppointmentController {
         return appointmentsDto;
     }
 
+    /**
+     *
+     * @param took_place
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping(value="/filter", params = "took_place")
     public List<AppointmentDto> findByPatient(@RequestParam("took_place") boolean took_place) throws NotFoundException
     {
@@ -166,6 +177,12 @@ public class AppointmentController {
         return appointmentsDto;
     }
 
+    /**
+     *
+     * @param doctorid
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping(value="/filter/future_appointments", params = {"doctorid"})
     public List<AppointmentDto> findAllByDoctorAndEndTimeGreaterThan(@RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
@@ -186,6 +203,11 @@ public class AppointmentController {
         return appointmentsDto;
     }
 
+    /**
+     *
+     * @return
+     * @throws NotFoundException
+     */
     @GetMapping(value="/filter/future_appointments")
     public List<AppointmentDto> findAllByEndTimeGreaterThan() throws NotFoundException
     {
@@ -284,7 +306,7 @@ public class AppointmentController {
 //
 //        return appointmentService.saveAppointment(appointmentDb);
 //    }
-//
+
 //    /**
 //     *
 //     * @param id
