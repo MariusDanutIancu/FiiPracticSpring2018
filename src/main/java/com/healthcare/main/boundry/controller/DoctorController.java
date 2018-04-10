@@ -5,30 +5,29 @@ import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.DoctorMapper;
+import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
+import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value="/api/0.1/doctors")
 public class DoctorController
 {
     private DoctorService doctorService;
-    private JavaMailSender javaMailSender;
+    private EmailService emailService;
 
     @Autowired
-    public DoctorController(DoctorService doctorService, JavaMailSender javaMailSender) {
+    public DoctorController(DoctorService doctorService, EmailService emailService) {
         this.doctorService = doctorService;
-        this.javaMailSender = javaMailSender;
+        this.emailService = emailService;
     }
 
     /**
@@ -81,7 +80,8 @@ public class DoctorController
     {
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
-        //this.sendEmail(doctor);
+        this.sendEmail(doctor, "Account created", String.format("You can see your data at %s",
+                "http://localhost:8080/api/0.1/doctors/" + doctor.getId()));
         return DoctorMapper.MAPPER.fromDoctor(doctor);
     }
 
@@ -153,19 +153,22 @@ public class DoctorController
     /**
      *
      * @param doctor
+     * @param subject
+     * @param message
      */
-    private void sendEmail(Doctor doctor)
+    @SuppressWarnings("Duplicates")
+    private void sendEmail(Doctor doctor, String subject, String message)
     {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        EmailUtil email = new EmailUtil();
+        email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
+        email.setTo(doctor.getEmail().getEmail());
+        email.setSubject(subject);
 
-        try {
-            mimeMessageHelper.setTo(doctor.getEmail().getEmail());
-            mimeMessageHelper.setSubject("Account created");
-            mimeMessageHelper.setText(String.format("You can see your data at %s", "http://localhost:8080/api/0.1/doctors/" + doctor.getId()));
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        Map<String, String> content = new HashMap<>();
+        content.put("name", doctor.getFirstName() + " " + doctor.getLastName());
+        content.put("message", message);
+        email.setContent(content);
+
+        emailService.sendEmailHttp(email);
     }
 }

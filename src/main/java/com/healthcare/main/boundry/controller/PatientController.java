@@ -4,21 +4,18 @@ import com.healthcare.main.boundry.dto.PatientDto;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
-import com.healthcare.main.boundry.mapper.DoctorMapper;
 import com.healthcare.main.boundry.mapper.PatientMapper;
-import com.healthcare.main.entity.model.Doctor;
+import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
+import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -26,13 +23,13 @@ import java.util.List;
 public class PatientController
 {
     private PatientService patientService;
-    private JavaMailSender javaMailSender;
+    private EmailService emailService;
 
     @Autowired
-    public PatientController(PatientService patientService,  JavaMailSender javaMailSender)
+    public PatientController(PatientService patientService,  EmailService emailService)
     {
         this.patientService = patientService;
-        this.javaMailSender = javaMailSender;
+        this.emailService = emailService;
     }
 
     /**
@@ -86,7 +83,9 @@ public class PatientController
     {
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
-        //this.sendEmail(patient);
+        this.sendEmail(patient, "Account created", "Dear "  +patient.getFirstName() + " " +
+                patient.getLastName() + " " + String.format("You can see your data at %s",
+                "http://localhost:8080/api/0.1/patients/" + patient.getId()));
         return PatientMapper.MAPPER.fromPatient(patient);
     }
 
@@ -159,19 +158,22 @@ public class PatientController
     /**
      *
      * @param patient
+     * @param subject
+     * @param message
      */
-    private void sendEmail(Patient patient)
+    @SuppressWarnings("Duplicates")
+    private void sendEmail(Patient patient, String subject, String message)
     {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        EmailUtil email = new EmailUtil();
+        email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
+        email.setTo(patient.getEmail().getEmail());
+        email.setSubject(subject);
 
-        try {
-            mimeMessageHelper.setTo(patient.getEmail().getEmail());
-            mimeMessageHelper.setSubject("Account created");
-            mimeMessageHelper.setText(String.format("You can see your data at %s", "http://localhost:8080/api/0.1/patients/" + patient.getId()));
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        Map<String, String> content = new HashMap<>();
+        content.put("name", patient.getFirstName() + " " + patient.getLastName());
+        content.put("message", message);
+        email.setContent(content);
+
+        emailService.sendEmailText(email);
     }
 }

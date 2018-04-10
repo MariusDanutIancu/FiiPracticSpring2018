@@ -6,22 +6,17 @@ import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.AppointmentMapper;
 import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.DoctorService;
+import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.Appointment;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.entity.model.Person;
+import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -31,15 +26,15 @@ public class AppointmentController {
     private AppointmentService appointmentService;
     private DoctorService doctorService;
     private PatientService patientService;
-    private JavaMailSender javaMailSender;
+    private EmailService emailService;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
-                                 PatientService patientService, JavaMailSender javaMailSender) {
+                                 PatientService patientService, EmailService emailService) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
-        this.javaMailSender = javaMailSender;
+        this.emailService = emailService;
     }
 
     /**
@@ -244,12 +239,13 @@ public class AppointmentController {
                     appointmentDto.getStartTime() , appointmentDto.getEndTime()));
         }
 
-
         Appointment appointment = AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto);
         appointment = appointmentService.saveAppointment(appointment);
 
-        //sendEmail(doctorDB, appointment.getId());
-        //sendEmail(patientDB, appointment.getId());
+        sendEmail(doctorDB, "Appoinment set", String.format("You can see your appointment at %s",
+                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
+        sendEmail(patientDB, "Appoinment set", String.format("You can see your appointment at %s",
+                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
         return AppointmentMapper.MAPPER.fromAppointment(appointment);
     }
 
@@ -315,18 +311,25 @@ public class AppointmentController {
 //        appointmentService.deleteAppointments();
 //    }
 
-    private void sendEmail(Person person, Long appointmentId)
+    /**
+     *
+     * @param person
+     * @param subject
+     * @param message
+     */
+    @SuppressWarnings("Duplicates")
+    private void sendEmail(Person person, String subject, String message)
     {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        EmailUtil email = new EmailUtil();
+        email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
+        email.setTo(person.getEmail().getEmail());
+        email.setSubject(subject);
 
-        try {
-            mimeMessageHelper.setTo(person.getEmail().getEmail());
-            mimeMessageHelper.setSubject("Account created");
-            mimeMessageHelper.setText(String.format("You can see your appointment at %s", "http://localhost:8080/api/0.1/appointments/" + appointmentId));
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        Map<String, String> content = new HashMap<>();
+        content.put("name", person.getFirstName() + " " + person.getLastName());
+        content.put("message", message);
+        email.setContent(content);
+
+        emailService.sendEmailHttp(email);
     }
 }
