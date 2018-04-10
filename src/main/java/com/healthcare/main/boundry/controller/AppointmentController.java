@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -156,6 +157,42 @@ public class AppointmentController {
         return appointmentsDto;
     }
 
+    @GetMapping(value="/filter/future_appointments", params = {"doctorid"})
+    public List<AppointmentDto> findAllByDoctorAndEndTimeGreaterThan(@RequestParam("doctorid") Long doctorid) throws NotFoundException
+    {
+        Date current_date = new Date();
+        Doctor doctorDb = doctorService.getDoctor(doctorid);
+        if(doctorDb == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", doctorid));
+        }
+
+        List<Appointment> appointments = appointmentService.findAllByDoctorAndEndTimeGreaterThan(doctorDb, current_date);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
+
+    @GetMapping(value="/filter/future_appointments")
+    public List<AppointmentDto> findAllByEndTimeGreaterThan() throws NotFoundException
+    {
+        Date current_date = new Date();
+
+        List<Appointment> appointments = appointmentService.findAllByEndTimeGreaterThan(current_date);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
+
     /**
      * Appointment post request
      * @param appointmentDto
@@ -184,8 +221,8 @@ public class AppointmentController {
                     appointmentDto.getStartTime() , appointmentDto.getEndTime()));
         }
 
-        Integer count = appointmentService.countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(appointmentDto.getStartTime(),
-                appointmentDto.getEndTime(), appointmentDto.getDoctor_id(), appointmentDto.getPatient_id());
+        Integer count = appointmentService.countAllByStartTimeBetweenAndDoctorOrPatient(appointmentDto.getStartTime(),
+                appointmentDto.getEndTime(), doctorDB, patientDB);
 
         if (count > 0)
         {

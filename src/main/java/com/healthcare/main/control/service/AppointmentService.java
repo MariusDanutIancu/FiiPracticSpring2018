@@ -14,7 +14,9 @@ public interface AppointmentService {
     List<Appointment> getAppointmentsByPatient(Patient patient);
     List<Appointment> getAppointmentsByDoctor(Doctor doctor);
     List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient);
-    Integer countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(Date startDate, Date endDate, Long doctorId, Long patientId);
+    List<Appointment> findAllByDoctorAndEndTimeGreaterThan(Doctor doctor, Date end_date);
+    List<Appointment> findAllByEndTimeGreaterThan(Date end_date);
+    Integer countAllByStartTimeBetweenAndDoctorOrPatient(Date startDate, Date endDate, Doctor doctor, Patient patient);
     Appointment saveAppointment(Appointment appointment);
     void deleteAppointment(Appointment appointment);
     void deleteAppointments();

@@ -47,10 +47,19 @@ public class AppointmentServiceImpl implements AppointmentService{
     }
 
     @Override
-    public Integer countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(Date startDate, Date endDate, Long doctorId, Long patientId) {
-        return appointmentRepository.countAllBetweenStartTimeAndEndTimeAndDoctorOrPatient(startDate, endDate, doctorId, patientId);
+    public List<Appointment> findAllByDoctorAndEndTimeGreaterThan(Doctor doctor, Date end_date) {
+        return appointmentRepository.findAllByDoctorAndEndTimeGreaterThan(doctor, end_date);
     }
 
+    @Override
+    public List<Appointment> findAllByEndTimeGreaterThan(Date end_date) {
+        return appointmentRepository.findAllByEndTimeGreaterThan(end_date);
+    }
+
+    @Override
+    public Integer countAllByStartTimeBetweenAndDoctorOrPatient(Date startDate, Date endDate, Doctor doctor, Patient patient) {
+        return appointmentRepository.countAllByStartTimeBetweenAndDoctorOrStartTimeBetweenAndPatient(startDate, endDate, doctor, startDate, endDate, patient);
+    }
 
     @Override
     public Appointment saveAppointment(Appointment appointment) {
