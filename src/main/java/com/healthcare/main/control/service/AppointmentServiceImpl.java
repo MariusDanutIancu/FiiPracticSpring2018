@@ -56,6 +56,22 @@ public class AppointmentServiceImpl implements AppointmentService{
         return appointmentRepository.findAllByEndTimeGreaterThan(end_date);
     }
 
+
+    @Override
+    public List<Appointment> findAllByTookPlace(boolean took_place) {
+        return appointmentRepository.findAllByTookPlace(took_place);
+    }
+
+    @Override
+    public List<Appointment> findAllByEndTimeLessThanEqual(Date end_date) {
+        return appointmentRepository.findAllByEndTimeLessThanEqual(end_date);
+    }
+
+    @Override
+    public List<Appointment> findAllByEndTimeLessThanEqualAndTookPlace(Date end_date, boolean took_place) {
+        return appointmentRepository.findAllByEndTimeLessThanEqualAndTookPlace(end_date, took_place);
+    }
+
     @Override
     public Integer countAllByStartTimeBetweenAndDoctorOrPatient(Date startDate, Date endDate, Doctor doctor, Patient patient) {
         return appointmentRepository.countAllByStartTimeBetweenAndDoctorOrStartTimeBetweenAndPatient(startDate, endDate, doctor, startDate, endDate, patient);

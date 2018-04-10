@@ -157,6 +157,20 @@ public class AppointmentController {
         return appointmentsDto;
     }
 
+    @GetMapping(value="/filter", params = "took_place")
+    public List<AppointmentDto> findByPatient(@RequestParam("took_place") boolean took_place) throws NotFoundException
+    {
+        List<Appointment> appointments = appointmentService.findAllByTookPlace(took_place);
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
+
+        for(Appointment appointment:appointments)
+        {
+            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
+        }
+
+        return appointmentsDto;
+    }
+
     @GetMapping(value="/filter/future_appointments", params = {"doctorid"})
     public List<AppointmentDto> findAllByDoctorAndEndTimeGreaterThan(@RequestParam("doctorid") Long doctorid) throws NotFoundException
     {

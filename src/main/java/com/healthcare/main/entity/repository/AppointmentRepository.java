@@ -16,9 +16,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findAllByDoctorAndPatient(Doctor doctor, Patient patient);
     List<Appointment> findAllByPatient(Patient patient);
     List<Appointment> findAllByDoctor(Doctor doctor);
+    List<Appointment> findAllByTookPlace(boolean took_place);
     List<Appointment> findAllByDoctorAndEndTimeGreaterThan(Doctor doctor, Date end_date);
     List<Appointment> findAllByEndTimeGreaterThan(Date end_date);
-    Integer countAllByStartTimeBetweenAndDoctorOrPatient(Date start_date, Date end_date, Doctor doctor, Patient patient);
+    List<Appointment> findAllByEndTimeLessThanEqual(Date end_date);
+    List<Appointment> findAllByEndTimeLessThanEqualAndTookPlace(Date end_date, boolean took_place);
 
 //    version 0.2 using data spring jpa - problem repetition because logical operations - TODO: find a better way without using custom query
     Integer countAllByStartTimeBetweenAndDoctorOrStartTimeBetweenAndPatient(Date start_date1, Date end_date1, Doctor doctor, Date start_date2, Date end_date2, Patient patient);

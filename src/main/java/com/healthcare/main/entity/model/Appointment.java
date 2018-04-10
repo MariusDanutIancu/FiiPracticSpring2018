@@ -1,6 +1,8 @@
 package com.healthcare.main.entity.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,6 +27,9 @@ public class Appointment
 
     @Column(name = "cause")
     private String cause;
+
+    @Column(name = "took_place")
+    private Boolean tookPlace = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
@@ -64,6 +69,14 @@ public class Appointment
 
     public void setCause(String cause) {
         this.cause = cause;
+    }
+
+    public boolean isTookPlace() {
+        return tookPlace;
+    }
+
+    public void setTookPlace(boolean tookPlace) {
+        this.tookPlace = tookPlace;
     }
 
     public Doctor getDoctor() {
