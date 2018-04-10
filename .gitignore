@@ -23,6 +23,6 @@ dist/
 nbdist/
 .nb-gradle/
 
-### python ###
-venv
+### Python ###
+venv/
 src/scripts/scripts.iml
