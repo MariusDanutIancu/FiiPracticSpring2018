@@ -26,3 +26,8 @@ nbdist/
 ### Python ###
 venv/
 src/scripts/scripts.iml
+
+### mvn ###
+.mvn/
+mvnw
+mvnw.cmd
