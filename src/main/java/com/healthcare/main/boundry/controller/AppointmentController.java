@@ -301,7 +301,7 @@ public class AppointmentController {
         Date current_date = new Date();
         Date future_date =  new Date(current_date.getTime() + HOUR);
 
-        if (appointmentDb.getStartTime().before(future_date))
+        if (appointmentDb.getStartTime().before(future_date) && appointmentDb.getStartTime().after(current_date))
         {
             throw new BadRequestException(String.format("Appointments that occur in the next hour can't be canceled %s",
                     canceledAppointmentDto.getCanceled_appointment_id()));
