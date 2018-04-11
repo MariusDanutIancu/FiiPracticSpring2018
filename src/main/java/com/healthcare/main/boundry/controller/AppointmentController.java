@@ -1,17 +1,16 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.AppointmentDto;
+import com.healthcare.main.boundry.dto.CanceledAppointmentDto;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.AppointmentMapper;
+import com.healthcare.main.boundry.mapper.CanceledAppointmentMapper;
 import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.control.service.PatientService;
-import com.healthcare.main.entity.model.Appointment;
-import com.healthcare.main.entity.model.Doctor;
-import com.healthcare.main.entity.model.Patient;
-import com.healthcare.main.entity.model.Person;
+import com.healthcare.main.entity.model.*;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +26,8 @@ public class AppointmentController {
     private DoctorService doctorService;
     private PatientService patientService;
     private EmailService emailService;
+
+    public static final long HOUR = 3600*1000;
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
@@ -269,6 +270,48 @@ public class AppointmentController {
 //        sendEmail(patientDB, "Appoinment set", String.format("You can see your appointment at %s",
 //                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
         return AppointmentMapper.MAPPER.fromAppointment(appointment);
+    }
+
+    @PutMapping(value="/cancel_appointment")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public AppointmentDto putAppointment(@RequestBody CanceledAppointmentDto canceledAppointmentDto)
+            throws NotFoundException, BadRequestException
+    {
+        Appointment appointmentDb = appointmentService.getAppointment(canceledAppointmentDto.getCanceled_appointment_id());
+        Doctor doctorDB = doctorService.getDoctor(canceledAppointmentDto.getDoctor_id());
+        Patient patientDB = patientService.getPatient(canceledAppointmentDto.getPatient_id());
+
+        if(appointmentDb == null){
+            throw new NotFoundException(String.format("Appointment with id=%s was not found.", canceledAppointmentDto.getCanceled_appointment_id()));
+        }
+
+        if(doctorDB == null){
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", canceledAppointmentDto.getDoctor_id()));
+        }
+
+        if(patientDB == null){
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", canceledAppointmentDto.getPatient_id()));
+        }
+
+        if (appointmentDb.getTookPlace())
+        {
+            throw new BadRequestException(String.format("Appointment already took place %s", canceledAppointmentDto.getCanceled_appointment_id()));
+        }
+
+        Date current_date = new Date();
+        Date future_date =  new Date(current_date.getTime() + HOUR);
+
+        if (appointmentDb.getStartTime().before(future_date))
+        {
+            throw new BadRequestException(String.format("Appointments that occur in the next hour can't be canceled %s",
+                    canceledAppointmentDto.getCanceled_appointment_id()));
+        }
+
+        CanceledAppointment canceledAppointment = CanceledAppointmentMapper.MAPPER.toCanceledAppointment(canceledAppointmentDto);
+        AppointmentMapper.MAPPER.toAppointment(canceledAppointment, appointmentDb);
+        appointmentDb = appointmentService.saveAppointment(appointmentDb);
+
+        return AppointmentMapper.MAPPER.fromAppointment(appointmentDb);
     }
 
 //    /**

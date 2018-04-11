@@ -1,15 +1,13 @@
 package com.healthcare.main.entity.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name="appointment")
-@JsonIgnoreProperties(value = {"patient", "doctor"})
+@JsonIgnoreProperties(value = {"patient", "doctor", "canceledAppointment"})
 public class Appointment
 {
     @Id
@@ -38,6 +36,10 @@ public class Appointment
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
     private Patient patient;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private CanceledAppointment canceledAppointment = new CanceledAppointment();
 
     public Long getId() {
         return id;
@@ -71,11 +73,11 @@ public class Appointment
         this.cause = cause;
     }
 
-    public boolean isTookPlace() {
+    public Boolean getTookPlace() {
         return tookPlace;
     }
 
-    public void setTookPlace(boolean tookPlace) {
+    public void setTookPlace(Boolean tookPlace) {
         this.tookPlace = tookPlace;
     }
 
@@ -93,6 +95,14 @@ public class Appointment
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    public CanceledAppointment getCanceledAppointment() {
+        return canceledAppointment;
+    }
+
+    public void setCanceledAppointment(CanceledAppointment canceledAppointment) {
+        this.canceledAppointment = canceledAppointment;
     }
 }
 

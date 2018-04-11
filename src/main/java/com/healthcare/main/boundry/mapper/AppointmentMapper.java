@@ -2,10 +2,12 @@ package com.healthcare.main.boundry.mapper;
 
 import com.healthcare.main.boundry.dto.AppointmentDto;
 import com.healthcare.main.entity.model.Appointment;
+import com.healthcare.main.entity.model.CanceledAppointment;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Patient;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
@@ -33,4 +35,9 @@ public interface AppointmentMapper {
             @Mapping(source = "appointmentDto.cause", target = "cause")
     })
     Appointment toAppointment(Doctor doctor, Patient patient, AppointmentDto appointmentDto);
+
+    @Mappings({
+            @Mapping(source = "canceledAppointment.canceled", target = "appointmentEntity.canceledAppointment.canceled"),
+    })
+    void toAppointment(CanceledAppointment canceledAppointment, @MappingTarget Appointment appointmentEntity);
 }
