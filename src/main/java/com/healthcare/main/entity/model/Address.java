@@ -1,6 +1,7 @@
 package com.healthcare.main.entity.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="address")
@@ -12,21 +13,27 @@ public class Address
     private Long id;
 
     @Column(name="street")
+    @Size(min = 2, max = 20, message = "Street must be between 2 and 100 characters")
     private String street;
 
     @Column(name="county")
+    @Size(min = 2, max = 20, message = "County must be between 2 and 20 characters")
     private String county;
 
     @Column(name="city")
+    @Size(min = 2, max = 20, message = "City must be between 2 and 20 characters")
     private String city;
 
     @Column(name="state")
+    @Size(min = 2, max = 20, message = "State must be between 2 and 20 characters")
     private String state;
 
     @Column(name="postal_code")
+    @Size(min = 2, max = 10, message = "Postal_code must be between 2 and 1O characters")
     private String postal_code;
 
     @Column(name="country")
+    @Size(min = 2, max = 20, message = "Country must be between 2 and 20 characters")
     private String country;
 
     public Long getId() {

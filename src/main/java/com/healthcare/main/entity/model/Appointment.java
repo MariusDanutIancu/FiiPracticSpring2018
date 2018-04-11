@@ -3,6 +3,7 @@ package com.healthcare.main.entity.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -24,6 +25,7 @@ public class Appointment
     private Date endTime;
 
     @Column(name = "cause")
+    @Size(min = 2, max = 20, message = "Cause must be between 2 and 100 characters")
     private String cause;
 
     @Column(name = "took_place")
