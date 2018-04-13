@@ -12,16 +12,53 @@ Python script that does api requests to https://randomuser.me
 and http://localhost:8080/api/0.1/ to generate random user data
 to populate a database.
 
-TODO: found a better api https://mockaroo.com/. I will update the script later or make another version.
-TODO: update script to populate other tables (Appointment ...) with random data
-
 Tested with python 3.5.
 Requires requests package (pip install requests)
-Tested on commit: 4a4c6e4e2c159790dce80b57c619d4aef9e4343c
 """
 
+import logging
 import requests
 import json
+import random
+import time
+from datetime import datetime, timedelta
+
+
+def random_date(start, end, format, prop):
+    """
+
+    :param start:
+    :param end:
+    :param format:
+    :param prop:
+    :return:
+    """
+
+    stime = time.mktime(time.strptime(start, format))
+    etime = time.mktime(time.strptime(end, format))
+    ptime = stime + prop * (etime - stime)
+    return time.strftime(format, time.localtime(ptime))
+
+
+def add_hours(date, hours):
+    """
+
+    :param date:
+    :param hours:
+    :return:
+    """
+
+    return (datetime.strptime(date, DATE_FORMAT) + timedelta(hours=hours)).strftime(DATE_FORMAT)
+
+
+def convert_date_string_to_iso(date):
+    """
+
+    :param date:
+    :return:
+    """
+
+    return datetime.strptime(date, DATE_FORMAT).isoformat()
 
 
 def api_request(nr_of_users):
@@ -34,34 +71,72 @@ def api_request(nr_of_users):
     return requests.get("https://randomuser.me/api/?results={0}&nat=au,us,gb,br".format(nr_of_users)).json()
 
 
-def build_person(api_json):
+def get_phone_number(api_json):
     """
 
     :param api_json:
     :return:
     """
 
-    person_json = dict()
-
-    phone_number = dict({"phone_number": "0700000000"})
-    email = dict({"email": api_json["email"]})
-    address = dict({"street": api_json["location"]["street"],
-                    "county": None,
-                    "city": api_json["location"]["city"],
-                    "state": api_json["location"]["state"],
-                    "postal_code": api_json["location"]["postcode"],
-                    "country": None})
-
-    person_json["firstName"] = api_json["name"]["first"]
-    person_json["lastName"] = api_json["name"]["last"]
-    person_json["phoneNumber"] = phone_number
-    person_json["email"] = email
-    person_json["address"] = address
-
-    return person_json
+    phone_number = {
+        "phone_number": "0700000000"
+    }
+    return phone_number
 
 
-def build_doctor(person_json, api_json):
+def get_email(api_json):
+    """
+
+    :param api_json:
+    :return:
+    """
+
+    email = {
+        "email": api_json["email"]
+    }
+    return email
+
+
+def get_address(api_json):
+    """
+
+    :param api_json:
+    :return:
+    """
+
+    # api_json["location"]["street"]
+    # api_json["location"]["state"]
+    # api_json["location"]["city"]
+    address = {
+        "street": "place_holder",
+        "county": "place_holder",
+        "city": "place_holder",
+        "state": "place_holder",
+        "postal_code": api_json["location"]["postcode"],
+        "country": "place_holder"
+    }
+    return address
+
+
+def get_person(api_json):
+    """
+
+    :param api_json:
+    :return:
+    """
+
+    person = {
+        "firstName": api_json["name"]["first"],
+        "lastName": api_json["name"]["last"],
+        "address": get_address(api_json),
+        "email": get_email(api_json),
+        "phoneNumber": get_phone_number(api_json)
+    }
+
+    return person
+
+
+def get_doctor(person_json, api_json):
     """
 
     :param person_json:
@@ -73,7 +148,7 @@ def build_doctor(person_json, api_json):
     return person_json
 
 
-def build_patient(person_json, api_json):
+def get_patient(person_json, api_json):
     """
 
     :param person_json:
@@ -81,31 +156,37 @@ def build_patient(person_json, api_json):
     :return:
     """
 
-    person_json["age"] = 10
+    person_json["age"] = random.randint(MIN_AGE, MAX_AGE)
     return person_json
 
 
-def parse_json(api_json, size):
+def get_appointment(max_doctor_id, max_patient_id):
+
+    start_time = random_date(MIN_DATE, MAX_DATE, DATE_FORMAT, random.random())
+    end_time = add_hours(start_time, random.randint(1, 3))
+
+    appointment_json = {
+        "doctor_id": random.randint(1, max_doctor_id + 1),
+        "patient_id": random.randint(1, max_patient_id + 1),
+        "startTime": convert_date_string_to_iso(start_time),
+        "endTime": convert_date_string_to_iso(end_time),
+        "cause": "placeholder"
+    }
+
+    return appointment_json
+
+
+def appointment_generator(max_doctor_id, max_patient_id, count):
     """
 
-    :param api_json:
-    :param size:
+    :param max_doctor_id:
+    :param max_patient_id:
+    :param count:
     :return:
     """
 
-    doctors = list()
-    patients = list()
-
-    print(size)
-    for idx in range(0, int(size/2)):
-        person_json = build_person(api_json['results'][idx])
-        doctors.append(build_doctor(person_json, api_json))
-
-    for idx in range(int(size / 2), size):
-        person_json = build_person(api_json['results'][idx])
-        patients.append(build_doctor(person_json, api_json))
-
-    return doctors, patients
+    for _ in range(count):
+        yield get_appointment(max_doctor_id, max_patient_id)
 
 
 def post_request(request_link, data, headers):
@@ -118,32 +199,92 @@ def post_request(request_link, data, headers):
     """
 
     r = requests.post(request_link, data=json.dumps(data), headers=headers)
-    print(r.status_code)
+    if r.status_code == 500:
+        print(r.json())
+        print(data)
 
 
-def post_list(request_link, data_list, headers):
+def post_elements(parse_function, data, request_link, headers):
     """
 
+    :param parse_function:
+    :param data:
     :param request_link:
-    :param data_list:
     :param headers:
     :return:
     """
 
-    for element in data_list:
-        post_request(request_link, element, headers)
+    for element in data:
+        post_request(request_link, parse_function(element), headers)
+
+
+def post_elements_by_generator(data_generator, request_link, headers):
+    """
+
+    :param count:
+    :param data_generator:
+    :param request_link:
+    :param headers:
+    :return:
+    """
+
+    try:
+        while True:
+            post_request(request_link, next(data_generator), headers)
+    except StopIteration:
+        pass
+
+
+def config_logger():
+
+    logger = logging.getLogger()
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s %(name)-3s %(levelname)-3s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    return logger
 
 
 MAX_ITEMS = 1000
+MIN_AGE = 1
+MAX_AGE = 150
+MIN_DATE = "2000-01-01 12:00:00"
+MAX_DATE = "2025-01-01 12:00:00"
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+MAX_APPOINTMENTS = 2000
+
+POST_REQUEST_LINK_TEMPLATE = "http://localhost:8080/api/0.1/{}"
+REQUEST_HEADER = {'content-type': 'application/json', 'Accept': 'application/json'}
 
 current_items = 1000
 if __name__ == "__main__":
 
+    logger = config_logger()
+
     if current_items <= MAX_ITEMS:
-        random_api_json = api_request(current_items)
-        parsed_doctor_list, parsed_patient_list = parse_json(random_api_json, current_items)
-        req_header = {'content-type': 'application/json', 'Accept': 'application/json'}
-        post_list("http://localhost:8080/api/0.1/doctors", parsed_doctor_list, req_header)
-        post_list("http://localhost:8080/api/0.1/patients", parsed_patient_list, req_header)
+
+        api_result = api_request(current_items)["results"]
+        doctors = api_result[0: current_items // 2]
+        patients = api_result[current_items // 2:]
+
+        post_elements(lambda x: get_doctor(get_person(x), doctors),
+                      doctors,
+                      POST_REQUEST_LINK_TEMPLATE.format("doctors"),
+                      REQUEST_HEADER)
+        logger.info("Doctors added")
+
+        post_elements(lambda x: get_patient(get_person(x), patients),
+                      patients,
+                      POST_REQUEST_LINK_TEMPLATE.format("patients"),
+                      REQUEST_HEADER)
+        logger.info("Patients added")
+
+        post_elements_by_generator(appointment_generator(current_items // 2, current_items // 2, MAX_APPOINTMENTS),
+                                   POST_REQUEST_LINK_TEMPLATE.format("appointments"),
+                                   REQUEST_HEADER)
+        logger.info("Appointments added")
+
     else:
-        print("Please insert a lower number")
+        logger.warning("Please insert a lower number")
