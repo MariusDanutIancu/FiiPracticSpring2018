@@ -8,6 +8,8 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface PatientMapper {
 
@@ -22,7 +24,8 @@ public interface PatientMapper {
             @Mapping(source = "address.street", target = "address.street"),
             @Mapping(source = "email.email", target = "email.email"),
     })
-    PatientDto fromPatient(Patient patient);
+    PatientDto toPatientDto(Patient patient);
+    List<PatientDto> toPatientsDto(List<Patient> doctors);
 
     @Mappings({
             @Mapping(source = "patient_id", target = "id"),

@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -50,7 +48,7 @@ public class PatientController
         {
             throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
         }
-        return PatientMapper.MAPPER.fromPatient(patient);
+        return PatientMapper.MAPPER.toPatientDto(patient);
     }
 
     /**
@@ -66,14 +64,7 @@ public class PatientController
         {
             throw new NotFoundException("There are no emails in the database.");
         }
-
-
-        List<PatientDto> patientDtos = new ArrayList<>();
-        for(Patient patient:patientListDb)
-        {
-            patientDtos.add(PatientMapper.MAPPER.fromPatient(patient));
-        }
-        return patientDtos;
+        return PatientMapper.MAPPER.toPatientsDto(patientListDb);
     }
 
     /**
@@ -92,7 +83,7 @@ public class PatientController
                 String.format(PATIENT_EMAIL_MESSAGE_TEMPLATE, patient.getId()));
         emailService.sendEmailHttp(email);
 
-        return PatientMapper.MAPPER.fromPatient(patient);
+        return PatientMapper.MAPPER.toPatientDto(patient);
     }
 
     /**
@@ -132,7 +123,7 @@ public class PatientController
 
         PatientMapper.MAPPER.toPatient(patientDto, patientDb);
         patientDb = patientService.updatePatient(patientDb);
-        return PatientMapper.MAPPER.fromPatient(patientDb);
+        return PatientMapper.MAPPER.toPatientDto(patientDb);
     }
 
     /**

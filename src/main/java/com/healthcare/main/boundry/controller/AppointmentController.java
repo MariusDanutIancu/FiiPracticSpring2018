@@ -1,11 +1,9 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.AppointmentDto;
-import com.healthcare.main.boundry.dto.CanceledAppointmentDto;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.AppointmentMapper;
-import com.healthcare.main.boundry.mapper.CanceledAppointmentMapper;
 import com.healthcare.main.control.service.AppointmentService;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.control.service.EmailService;
@@ -59,25 +57,19 @@ public class AppointmentController {
             throw new NotFoundException(String.format("appointmentDb with id=%s was not found.", id));
         }
 
-        return AppointmentMapper.MAPPER.fromAppointment(appointmentDb);
+        return AppointmentMapper.MAPPER.toAppointmentDto(appointmentDb);
     }
 
     /**
      * Appointment get request
      *
      * @return all appointments that are in the database
-     * @throws NotFoundException no appointments found in the database
      */
     @GetMapping()
     public List<AppointmentDto> getAllAppointments()
     {
         List<Appointment> appointmentListDb = appointmentService.getAppointments();
-        List<AppointmentDto> appointmentDtos = new ArrayList<>();
-        for(Appointment appointment:appointmentListDb)
-        {
-            appointmentDtos.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-        return appointmentDtos;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentListDb);
     }
 
     /**
@@ -102,14 +94,7 @@ public class AppointmentController {
         }
 
         List<Appointment> appointments = appointmentService.getAppointmentsDoctorAndPatient(doctorDb, patientDB);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return  AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
@@ -128,14 +113,7 @@ public class AppointmentController {
         }
 
         List<Appointment> appointments = appointmentService.getAppointmentsByDoctor(doctorDb);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
@@ -154,14 +132,7 @@ public class AppointmentController {
         }
 
         List<Appointment> appointments = appointmentService.getAppointmentsByPatient(patientDB);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
@@ -169,20 +140,12 @@ public class AppointmentController {
      *
      * @param tookPlace boolean flag that marks if an appointments took place or not.
      * @return a list of appointments
-     * @throws NotFoundException no appointments are found
      */
     @GetMapping(value="/filter", params = "took-place")
-    public List<AppointmentDto> findByTookPlace(@RequestParam("took-place") boolean tookPlace) throws NotFoundException
+    public List<AppointmentDto> findByTookPlace(@RequestParam("took-place") boolean tookPlace)
     {
         List<Appointment> appointments = appointmentService.findAllByTookPlace(tookPlace);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
@@ -201,41 +164,20 @@ public class AppointmentController {
         }
 
         List<Appointment> appointments = appointmentService.findAllByDoctorAndEndTimeGreaterThan(doctorDb, current_date);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
      * Future appointments get request
      *
      * @return a list of appointments
-     * @throws NotFoundException no appointments are found
      */
     @GetMapping(value="/future_appointments")
-    public List<AppointmentDto> getFutureAppointments() throws NotFoundException
+    public List<AppointmentDto> getFutureAppointments()
     {
         Date current_date = new Date();
-
         List<Appointment> appointments = appointmentService.findAllByEndTimeGreaterThan(current_date);
-
-        if(appointments.size() == 0)
-        {
-            throw new NotFoundException("No appointments found");
-        }
-
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
-        for(Appointment appointment:appointments)
-        {
-            appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
-        }
-
-        return appointmentsDto;
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointments);
     }
 
     /**
@@ -284,39 +226,39 @@ public class AppointmentController {
                 String.format(APPOINTMENT_EMAIL_MESSAGE_TEMPLATE, appointment.getId()));
         emailService.sendEmailHttp(email);
 
-        return AppointmentMapper.MAPPER.fromAppointment(appointment);
+        return AppointmentMapper.MAPPER.toAppointmentDto(appointment);
     }
 
     /**
      *
-     * @param canceledAppointmentDto appointment data that needs to be canceled
+     * @param appointmentDto appointment data that needs to be canceled
      * @return canceled appointment
      * @throws NotFoundException the appointment/doctor/patient was not found
      * @throws BadRequestException appoitnment took place or it yill take place in the next hour
      */
     @PutMapping(value="/cancel_appointment")
-    public AppointmentDto putAppointment(@RequestBody CanceledAppointmentDto canceledAppointmentDto)
+    public AppointmentDto putAppointment(@RequestBody AppointmentDto appointmentDto)
             throws NotFoundException, BadRequestException
     {
-        Appointment appointmentDb = appointmentService.getAppointment(canceledAppointmentDto.getCanceled_appointment_id());
-        Doctor doctorDB = doctorService.getDoctor(canceledAppointmentDto.getDoctor_id());
-        Patient patientDB = patientService.getPatient(canceledAppointmentDto.getPatient_id());
+        Appointment appointmentDb = appointmentService.getAppointment(appointmentDto.getAppointment_id());
+        Doctor doctorDB = doctorService.getDoctor(appointmentDto.getDoctor_id());
+        Patient patientDB = patientService.getPatient(appointmentDto.getPatient_id());
 
         if(appointmentDb == null){
-            throw new NotFoundException(String.format("Appointment with id=%s was not found.", canceledAppointmentDto.getCanceled_appointment_id()));
+            throw new NotFoundException(String.format("Appointment with id=%s was not found.", appointmentDto.getAppointment_id()));
         }
 
         if(doctorDB == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", canceledAppointmentDto.getDoctor_id()));
+            throw new NotFoundException(String.format("Doctor with id=%s was not found.", appointmentDto.getDoctor_id()));
         }
 
         if(patientDB == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", canceledAppointmentDto.getPatient_id()));
+            throw new NotFoundException(String.format("Patient with id=%s was not found.", appointmentDto.getPatient_id()));
         }
 
         if (appointmentDb.getTookPlace())
         {
-            throw new BadRequestException(String.format("Appointment already took place %s", canceledAppointmentDto.getCanceled_appointment_id()));
+            throw new BadRequestException(String.format("Appointment already took place %s", appointmentDto.getAppointment_id()));
         }
 
         Date current_date = new Date();
@@ -325,14 +267,13 @@ public class AppointmentController {
         if (appointmentDb.getStartTime().before(future_date) && appointmentDb.getStartTime().after(current_date))
         {
             throw new BadRequestException(String.format("Appointments that occur in the next hour can't be canceled %s",
-                    canceledAppointmentDto.getCanceled_appointment_id()));
+                    appointmentDto.getAppointment_id()));
         }
 
-        CanceledAppointment canceledAppointment = CanceledAppointmentMapper.MAPPER.toCanceledAppointment(canceledAppointmentDto);
-        AppointmentMapper.MAPPER.toAppointment(canceledAppointment, appointmentDb);
+        AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto, appointmentDb);
         appointmentDb = appointmentService.saveAppointment(appointmentDb);
 
-        return AppointmentMapper.MAPPER.fromAppointment(appointmentDb);
+        return AppointmentMapper.MAPPER.toAppointmentDto(appointmentDb);
     }
 
 //    /**

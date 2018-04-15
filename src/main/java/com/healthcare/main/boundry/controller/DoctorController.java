@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value="/api/0.1/doctors")
@@ -48,7 +46,7 @@ public class DoctorController
         {
             throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
         }
-        return DoctorMapper.MAPPER.fromDoctor(doctor);
+        return DoctorMapper.MAPPER.toDoctorDto(doctor);
     }
 
     /**
@@ -64,13 +62,7 @@ public class DoctorController
         {
             throw new NotFoundException("There are no doctors in the database.");
         }
-
-        List<DoctorDto> doctorDtos = new ArrayList<>();
-        for(Doctor doctor:doctorListDb)
-        {
-            doctorDtos.add(DoctorMapper.MAPPER.fromDoctor(doctor));
-        }
-        return doctorDtos;
+        return DoctorMapper.MAPPER.toDoctorsDto(doctorListDb);
     }
 
     /**
@@ -89,7 +81,7 @@ public class DoctorController
                 String.format(DOCTOR_EMAIL_MESSAGE_TEMPLATE, doctor.getId()));
         emailService.sendEmailHttp(email);
 
-        return DoctorMapper.MAPPER.fromDoctor(doctor);
+        return DoctorMapper.MAPPER.toDoctorDto(doctor);
     }
 
     /**
@@ -128,7 +120,7 @@ public class DoctorController
         DoctorMapper.MAPPER.toDoctor(doctorDto, doctorDb);
         doctorDb = doctorService.updateDoctor(doctorDb);
 
-        return DoctorMapper.MAPPER.fromDoctor(doctorDb);
+        return DoctorMapper.MAPPER.toDoctorDto(doctorDb);
     }
 
     /**

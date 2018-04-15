@@ -10,6 +10,7 @@ public class AppointmentDto {
     private Date startTime;
     private Date endTime;
     private String cause;
+    private Boolean cancel;
 
     public Long getAppointment_id() {
         return appointment_id;
@@ -58,4 +59,13 @@ public class AppointmentDto {
     public void setCause(String cause) {
         this.cause = cause;
     }
+
+    public Boolean getCancel() {
+        return cancel;
+    }
+
+    public void setCancel(Boolean cancel) {
+        this.cancel = cancel;
+    }
+
 }
