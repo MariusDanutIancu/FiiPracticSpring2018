@@ -25,6 +25,10 @@ public class PatientController
     private PatientService patientService;
     private EmailService emailService;
 
+    //template used to build a specific email message
+    private static final String PATIENT_EMAIL_MESSAGE_TEMPLATE =
+            "You can see your appointment at http://localhost:8080/api/0.1/patients/%s";
+
     @Autowired
     public PatientController(PatientService patientService,  EmailService emailService)
     {
@@ -83,9 +87,11 @@ public class PatientController
     {
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
-//        this.sendEmail(patient, "Account created", "Dear "  +patient.getFirstName() + " " +
-//                patient.getLastName() + " " + String.format("You can see your data at %s",
-//                "http://localhost:8080/api/0.1/patients/" + patient.getId()));
+
+        EmailUtil email = emailService.getEmail(patient, "Account created",
+                String.format(PATIENT_EMAIL_MESSAGE_TEMPLATE, patient.getId()));
+        emailService.sendEmailHttp(email);
+
         return PatientMapper.MAPPER.fromPatient(patient);
     }
 
@@ -153,27 +159,5 @@ public class PatientController
     public void deleteAllPatients()
     {
         patientService.deleteAllPatients();
-    }
-
-    /**
-     *
-     * @param patient
-     * @param subject
-     * @param message
-     */
-    @SuppressWarnings("Duplicates")
-    private void sendEmail(Patient patient, String subject, String message)
-    {
-        EmailUtil email = new EmailUtil();
-        email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
-        email.setTo(patient.getEmail().getEmail());
-        email.setSubject(subject);
-
-        Map<String, String> content = new HashMap<>();
-        content.put("name", patient.getFirstName() + " " + patient.getLastName());
-        content.put("message", message);
-        email.setContent(content);
-
-        emailService.sendEmailText(email);
     }
 }

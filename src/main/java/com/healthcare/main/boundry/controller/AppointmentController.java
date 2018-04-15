@@ -27,7 +27,12 @@ public class AppointmentController {
     private PatientService patientService;
     private EmailService emailService;
 
-    public static final long HOUR = 3600*1000;
+    //template used to add an hour to a java.util.Date object
+    private static final long HOUR_IN_MILLISECONDS = 3600*1000;
+
+    //template used to build a specific email message
+    private static final String APPOINTMENT_EMAIL_MESSAGE_TEMPLATE =
+            "You can see your appointment at http://localhost:8080/api/0.1/appointments/%s";
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
@@ -39,9 +44,10 @@ public class AppointmentController {
     }
 
     /**
-     * Appointment get request using unique id.
+     * Appointment get request using appointment unique id.
+     *
      * @param id appointment unique id
-     * @return an appointment
+     * @return requested appointment
      * @throws NotFoundException no appointment with requested id found in database
      */
     @GetMapping(value="/{id}")
@@ -58,17 +64,14 @@ public class AppointmentController {
 
     /**
      * Appointment get request
-     * @return all appointments
+     *
+     * @return all appointments that are in the database
      * @throws NotFoundException no appointments found in the database
      */
     @GetMapping()
-    public List<AppointmentDto> getAllAppointments() throws NotFoundException
+    public List<AppointmentDto> getAllAppointments()
     {
         List<Appointment> appointmentListDb = appointmentService.getAppointments();
-        if(appointmentListDb.size() == 0)
-        {
-            throw new NotFoundException("There are no appointments in the database.");
-        }
         List<AppointmentDto> appointmentDtos = new ArrayList<>();
         for(Appointment appointment:appointmentListDb)
         {
@@ -78,11 +81,12 @@ public class AppointmentController {
     }
 
     /**
+     * Appointment get request using doctor id and patient id as filters
      *
-     * @param patientid
-     * @param doctorid
-     * @return
-     * @throws NotFoundException
+     * @param patientid unique patient id
+     * @param doctorid unique doctor id
+     * @return a list of appointments
+     * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = { "patientid", "doctorid" })
     public List<AppointmentDto> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
@@ -109,10 +113,11 @@ public class AppointmentController {
     }
 
     /**
+     * Appointment get request using doctor id as filter
      *
-     * @param doctorid
-     * @return
-     * @throws NotFoundException
+     * @param doctorid unique doctor id
+     * @return a list of appointments
+     * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = "doctorid" )
     public List<AppointmentDto> findByDoctor(@RequestParam("doctorid") Long doctorid) throws NotFoundException
@@ -134,10 +139,11 @@ public class AppointmentController {
     }
 
     /**
+     * Appointment get request using patient id as filter
      *
-     * @param patientid
-     * @return
-     * @throws NotFoundException
+     * @param patientid unique patient id
+     * @return a list of appointments
+     * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = "patientid")
     public List<AppointmentDto> findByPatient(@RequestParam("patientid") Long patientid) throws NotFoundException
@@ -159,15 +165,16 @@ public class AppointmentController {
     }
 
     /**
+     * Appointments get request using took place as filter.
      *
-     * @param took_place
-     * @return
-     * @throws NotFoundException
+     * @param tookPlace boolean flag that marks if an appointments took place or not.
+     * @return a list of appointments
+     * @throws NotFoundException no appointments are found
      */
-    @GetMapping(value="/filter", params = "took_place")
-    public List<AppointmentDto> findByPatient(@RequestParam("took_place") boolean took_place) throws NotFoundException
+    @GetMapping(value="/filter", params = "took-place")
+    public List<AppointmentDto> findByTookPlace(@RequestParam("took-place") boolean tookPlace) throws NotFoundException
     {
-        List<Appointment> appointments = appointmentService.findAllByTookPlace(took_place);
+        List<Appointment> appointments = appointmentService.findAllByTookPlace(tookPlace);
         List<AppointmentDto> appointmentsDto = new ArrayList<>();
 
         for(Appointment appointment:appointments)
@@ -179,12 +186,12 @@ public class AppointmentController {
     }
 
     /**
-     *
-     * @param doctorid
-     * @return
-     * @throws NotFoundException
+     * Future appointments get request using doctorid as filter.
+     * @param doctorid unique patient id
+     * @return a list of appointments
+     * @throws NotFoundException no appointments are found
      */
-    @GetMapping(value="/filter/future_appointments", params = {"doctorid"})
+    @GetMapping(value="/future_appointments/filter", params = {"doctorid"})
     public List<AppointmentDto> findAllByDoctorAndEndTimeGreaterThan(@RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
         Date current_date = new Date();
@@ -205,18 +212,24 @@ public class AppointmentController {
     }
 
     /**
+     * Future appointments get request
      *
-     * @return
-     * @throws NotFoundException
+     * @return a list of appointments
+     * @throws NotFoundException no appointments are found
      */
-    @GetMapping(value="/filter/future_appointments")
-    public List<AppointmentDto> findAllByEndTimeGreaterThan() throws NotFoundException
+    @GetMapping(value="/future_appointments")
+    public List<AppointmentDto> getFutureAppointments() throws NotFoundException
     {
         Date current_date = new Date();
 
         List<Appointment> appointments = appointmentService.findAllByEndTimeGreaterThan(current_date);
-        List<AppointmentDto> appointmentsDto = new ArrayList<>();
 
+        if(appointments.size() == 0)
+        {
+            throw new NotFoundException("No appointments found");
+        }
+
+        List<AppointmentDto> appointmentsDto = new ArrayList<>();
         for(Appointment appointment:appointments)
         {
             appointmentsDto.add(AppointmentMapper.MAPPER.fromAppointment(appointment));
@@ -227,7 +240,8 @@ public class AppointmentController {
 
     /**
      * Appointment post request
-     * @param appointmentDto
+     *
+     * @param appointmentDto appointment data that needs to be saved
      * @return the saved appointment
      * @throws NotFoundException if the appointment targets are not in the database
      */
@@ -265,15 +279,22 @@ public class AppointmentController {
         Appointment appointment = AppointmentMapper.MAPPER.toAppointment(doctorDB, patientDB, appointmentDto);
         appointment = appointmentService.saveAppointment(appointment);
 
-//        sendEmail(doctorDB, "Appoinment set", String.format("You can see your appointment at %s",
-//                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
-//        sendEmail(patientDB, "Appoinment set", String.format("You can see your appointment at %s",
-//                "http://localhost:8080/api/0.1/appointments/" + appointment.getId()));
+
+        EmailUtil email = emailService.getEmail(doctorDB, "Appointment set",
+                String.format(APPOINTMENT_EMAIL_MESSAGE_TEMPLATE, appointment.getId()));
+        emailService.sendEmailHttp(email);
+
         return AppointmentMapper.MAPPER.fromAppointment(appointment);
     }
 
+    /**
+     *
+     * @param canceledAppointmentDto appointment data that needs to be canceled
+     * @return canceled appointment
+     * @throws NotFoundException the appointment/doctor/patient was not found
+     * @throws BadRequestException appoitnment took place or it yill take place in the next hour
+     */
     @PutMapping(value="/cancel_appointment")
-    @ResponseStatus(value = HttpStatus.CREATED)
     public AppointmentDto putAppointment(@RequestBody CanceledAppointmentDto canceledAppointmentDto)
             throws NotFoundException, BadRequestException
     {
@@ -299,7 +320,7 @@ public class AppointmentController {
         }
 
         Date current_date = new Date();
-        Date future_date =  new Date(current_date.getTime() + HOUR);
+        Date future_date =  new Date(current_date.getTime() + HOUR_IN_MILLISECONDS);
 
         if (appointmentDb.getStartTime().before(future_date) && appointmentDb.getStartTime().after(current_date))
         {
@@ -375,26 +396,4 @@ public class AppointmentController {
 //    {
 //        appointmentService.deleteAppointments();
 //    }
-
-    /**
-     *
-     * @param person
-     * @param subject
-     * @param message
-     */
-    @SuppressWarnings("Duplicates")
-    private void sendEmail(Person person, String subject, String message)
-    {
-        EmailUtil email = new EmailUtil();
-        email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
-        email.setTo(person.getEmail().getEmail());
-        email.setSubject(subject);
-
-        Map<String, String> content = new HashMap<>();
-        content.put("name", person.getFirstName() + " " + person.getLastName());
-        content.put("message", message);
-        email.setContent(content);
-
-        emailService.sendEmailHttp(email);
-    }
 }
