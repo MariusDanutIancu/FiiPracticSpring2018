@@ -12,8 +12,11 @@ import java.util.List;
 @JsonIgnoreProperties(value = {"appointments"})
 public class Doctor extends Person
 {
+    private static final Integer FIELD_MIN_SIZE = 2;
+    private static final Integer FIELD_MAX_SIZE = 20;
+
     @Column(name = "function")
-    @Size(min = 2, max = 20, message = "Function must be between 2 and 20 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "Function must be between 2 and 20 characters")
     private String function;
 
     @OneToMany(cascade = CascadeType.ALL,

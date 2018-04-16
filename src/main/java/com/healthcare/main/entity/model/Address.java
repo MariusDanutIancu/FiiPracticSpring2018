@@ -7,33 +7,38 @@ import javax.validation.constraints.Size;
 @Table(name="address")
 public class Address
 {
+    private static final Integer FIELD_MIN_SIZE = 2;
+    private static final Integer FIELD_MAX_SIZE = 20;
+    private static final Integer POSTAL_CODE_MIN_SIZE = 3;
+    private static final Integer POSTAL_CODE_MAX_SIZE = 10;
+
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="street")
-    @Size(min = 2, max = 20, message = "Street must be between 2 and 100 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "Street must be between 2 and 20 characters")
     private String street;
 
     @Column(name="county")
-    @Size(min = 2, max = 20, message = "County must be between 2 and 20 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "County must be between 2 and 20 characters")
     private String county;
 
     @Column(name="city")
-    @Size(min = 2, max = 20, message = "City must be between 2 and 20 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "City must be between 2 and 20 characters")
     private String city;
 
     @Column(name="state")
-    @Size(min = 2, max = 20, message = "State must be between 2 and 20 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "State must be between 2 and 20 characters")
     private String state;
 
     @Column(name="postal_code")
-    @Size(min = 2, max = 10, message = "Postal_code must be between 2 and 1O characters")
+    @Size(min = POSTAL_CODE_MIN_SIZE, max = POSTAL_CODE_MAX_SIZE, message = "Postal_code must be between 2 and 1O characters")
     private String postal_code;
 
     @Column(name="country")
-    @Size(min = 2, max = 20, message = "Country must be between 2 and 20 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "Country must be between 2 and 20 characters")
     private String country;
 
     public Long getId() {

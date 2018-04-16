@@ -11,6 +11,9 @@ import java.util.Date;
 @JsonIgnoreProperties(value = {"patient", "doctor", "canceledAppointment"})
 public class Appointment
 {
+    private static final Integer FIELD_MIN_SIZE = 2;
+    private static final Integer FIELD_MAX_SIZE = 20;
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +28,7 @@ public class Appointment
     private Date endTime;
 
     @Column(name = "cause")
-    @Size(min = 2, max = 20, message = "Cause must be between 2 and 100 characters")
+    @Size(min = FIELD_MIN_SIZE, max = FIELD_MAX_SIZE, message = "Cause must be between 2 and 100 characters")
     private String cause;
 
     @Column(name = "took_place")

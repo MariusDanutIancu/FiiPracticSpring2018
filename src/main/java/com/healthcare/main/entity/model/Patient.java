@@ -14,10 +14,13 @@ import java.util.List;
 @JsonIgnoreProperties(value = {"appointments"})
 public class Patient extends Person
 {
+    private static final Integer MIN_AGE = 1;
+    private static final Integer MAX_AGE = 150;
+
     @Column(name = "Age")
     @Digits(integer=3, fraction=0)
-    @Min(1)
-    @Max(150)
+    @Min(MIN_AGE)
+    @Max(MAX_AGE)
     private Integer Age;
 
     @OneToMany(cascade = CascadeType.ALL,

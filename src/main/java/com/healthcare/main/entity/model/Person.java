@@ -7,16 +7,19 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class Person {
 
+    private static final Integer NAME_MIN_SIZE = 2;
+    private static final Integer NAME_MAX_SIZE = 20;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "first_name")
-    @Size(min = 2, max = 20, message = "First name must be between 2 and 20 characters")
+    @Size(min = NAME_MIN_SIZE, max = NAME_MAX_SIZE, message = "First name must be between 2 and 20 characters")
     private String firstName;
 
     @Column(name = "last_name")
-    @Size(min = 2, max = 20, message = "Last name must be between 2 and 20 characters")
+    @Size(min = NAME_MIN_SIZE, max = NAME_MAX_SIZE, message = "Last name must be between 2 and 20 characters")
     private String lastName;
 
     @OneToOne(cascade = CascadeType.ALL)
