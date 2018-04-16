@@ -31,3 +31,6 @@ src/scripts/scripts.iml
 .mvn/
 mvnw
 mvnw.cmd
+
+### others ###
+logs/
