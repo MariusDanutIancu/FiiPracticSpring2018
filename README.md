@@ -16,7 +16,7 @@ You can download/clone/fork this project for teaching purposes.
 * Maven: https://maven.apache.org/download.cgi
 * Postgre 9.4.17: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
     
-###Optional:
+### Optional:
 * Python 3.5+ to run scripts: https://www.python.org/downloads/
 * Intellij recommended IDE: https://www.jetbrains.com/idea/download/#section=windows
 * git bash: https://git-scm.com/downloads
@@ -106,20 +106,28 @@ You can test api requests at the following link on a local server: `http://local
 ```   
 ## Running the tests   
     
-    Placeholder.
+Placeholder.
     
 ## Tutorials
-    
-    Placeholder.
+   
+* Rest: 
+    * https://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/
+    * http://www.andrewhavens.com/posts/20/beginners-guide-to-creating-a-rest-api/
+* Spring: 
+    * https://dzone.com/articles/a-guide-to-spring-framework-annotations 
+    * http://www.baeldung.com/spring-data-rest-relationships
+* Hibernate: 
+    * http://hibernate.org/
+    * https://howtoprogramwithjava.com/hibernate-eager-vs-lazy-fetch-type/   
 
 ## Contributing
 
-    1. Fork
-    2. Create your feature branch: `git checkout -b my-new-feature`
-    3. Commit your changes: `git commit -am 'Add some feature'`
-    4. Push to the branch: `git push origin my-new-feature`
-    5. Submit a pull request
+1. Fork
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request
 
 ## Authors
     
-    Placeholder.
+Placeholder.
