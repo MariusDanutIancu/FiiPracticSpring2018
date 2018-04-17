@@ -12,7 +12,6 @@ import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,10 +34,11 @@ public class PatientController
     }
 
     /**
+     * Patient get request using doctor unique id.
      *
-     * @param id
-     * @return
-     * @throws NotFoundException
+     * @param id patient unique id
+     * @return requested patient
+     * @throws NotFoundException no patient with requested id found in database
      */
     @GetMapping(value="/{id}")
     public PatientDto getPatient(@PathVariable("id") Long id) throws NotFoundException
@@ -52,9 +52,10 @@ public class PatientController
     }
 
     /**
+     * Patient get request
      *
-     * @return
-     * @throws NotFoundException
+     * @return all patients that are in the database
+     * @throws NotFoundException no patients found in the database
      */
     @GetMapping
     public List<PatientDto> getPatients() throws NotFoundException {
@@ -68,9 +69,9 @@ public class PatientController
     }
 
     /**
-     *
-     * @param patientDto
-     * @return
+     * Saves a patient in the database
+     * @param patientDto patient data that needs to be saved
+     * @return the saved patient
      */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -87,11 +88,12 @@ public class PatientController
     }
 
     /**
+     * Saves a list of patients in the database
      *
-     * @param id
-     * @param patient
-     * @return
-     * @throws MethodNotAllowedException
+     * @param id patient unique id
+     * @param patient patient data that needs to be saved
+     * @return null
+     * @throws MethodNotAllowedException this method is not allowed
      */
     @PostMapping(value="/{id}")
     public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
@@ -100,12 +102,13 @@ public class PatientController
     }
 
     /**
+     * Updates a patient in the database
      *
-     * @param id
-     * @param patientDto
-     * @return
-     * @throws BadRequestException
-     * @throws NotFoundException
+     * @param id patient unique id
+     * @param patientDto patient data that needs to be saved
+     * @return updated patient
+     * @throws BadRequestException the ids from url and request body does not match
+     * @throws NotFoundException patient not found
      */
     @PutMapping(value="/{id}")
     public PatientDto updatePatient(@PathVariable("id") Long id, @RequestBody PatientDto patientDto) throws BadRequestException, NotFoundException
@@ -127,9 +130,10 @@ public class PatientController
     }
 
     /**
+     * Delete a patient
      *
-     * @param id
-     * @throws NotFoundException
+     * @param id patient unique id
+     * @throws NotFoundException the requested patient was not found
      */
     @DeleteMapping(value="/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -143,7 +147,7 @@ public class PatientController
     }
 
     /**
-     *
+     * Delete all doctors
      */
     @DeleteMapping
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
