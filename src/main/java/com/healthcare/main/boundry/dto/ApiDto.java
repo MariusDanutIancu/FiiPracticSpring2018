@@ -5,6 +5,16 @@ public class ApiDto
     private String description;
     private String currentVersion;
 
+    public String getRequestPathTemplate() {
+        return requestPathTemplate;
+    }
+
+    public void setRequestPathTemplate(String requestPathTemplate) {
+        this.requestPathTemplate = requestPathTemplate;
+    }
+
+    private String requestPathTemplate;
+
     public String getDescription() {
         return description;
     }

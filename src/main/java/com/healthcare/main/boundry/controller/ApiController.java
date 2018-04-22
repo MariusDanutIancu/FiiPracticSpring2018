@@ -21,6 +21,7 @@ public class ApiController {
 
         apiDtoResponse.setCurrentVersion("0.1");
         apiDtoResponse.setDescription("Spring boot rest application");
+        apiDtoResponse.setRequestPathTemplate("/api/<api_version>/<request>");
 
         return apiDtoResponse;
     }
