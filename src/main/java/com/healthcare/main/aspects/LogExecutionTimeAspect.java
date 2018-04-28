@@ -1,6 +1,5 @@
-package com.healthcare.main.control.aop;
+package com.healthcare.main.aspects;
 
-import com.healthcare.main.boundry.controller.ApiController;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogExecutionTimeAspect {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogExecutionTimeAspect.class);
 
-    @Around("@annotation(LogExecutionTime)")
+    @Around("@annotation(com.healthcare.main.aspects.LogExecutionTime)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 
         long start = System.currentTimeMillis();
