@@ -63,7 +63,7 @@ public class PatientController
         List<Patient> patientListDb = patientService.getAllPatients();
         if(patientListDb.size() == 0)
         {
-            throw new NotFoundException("There are no emails in the database.");
+            throw new NotFoundException("There are no patients in the database.");
         }
         return PatientMapper.MAPPER.toPatientsDto(patientListDb);
     }
