@@ -1,6 +1,7 @@
 package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.ApiDto;
+import com.healthcare.main.control.aop.LogExecutionTime;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ public class ApiController {
      * @return
      */
     @GetMapping
+    @LogExecutionTime
     public ApiDto getInfo()
     {
         ApiDto apiDtoResponse = new ApiDto();
