@@ -74,6 +74,12 @@ public class AppointmentController {
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentListDb);
     }
 
+    /**
+     * Appointment get request with pagination
+     *
+     * @param pageable
+     * @return an appointment list
+     */
     @GetMapping(value="/filter")
     public List<AppointmentDto> appointmentPageable(Pageable pageable)
     {
@@ -251,7 +257,7 @@ public class AppointmentController {
      * @param appointmentDto appointment data that needs to be canceled
      * @return canceled appointment
      * @throws NotFoundException the appointment/doctor/patient was not found
-     * @throws BadRequestException appoitnment took place or it yill take place in the next hour
+     * @throws BadRequestException appointment took place or it will take place in the next hour
      */
     @PutMapping(value="/cancel_appointment")
     public AppointmentDto putAppointment(@RequestBody AppointmentDto appointmentDto)
@@ -295,11 +301,11 @@ public class AppointmentController {
 
     /**
      *
-     * @param id
-     * @param appointmentDto
-     * @return
-     * @throws BadRequestException
-     * @throws NotFoundException
+     * @param id appointment unique id
+     * @param appointmentDto appointment data that needs to be updated
+     * @return updated appointment
+     * @throws BadRequestException appointment path id does not match body id or appointment cancelation has been requested
+     * @throws NotFoundException the appointment/doctor/patient was not found
      */
     @PutMapping(value="/{id}")
     public AppointmentDto updateAppointment(@PathVariable("id") Long id, @RequestBody AppointmentDto appointmentDto) throws BadRequestException, NotFoundException {
