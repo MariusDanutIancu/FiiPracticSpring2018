@@ -5,6 +5,8 @@ import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.entity.repository.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -92,4 +94,10 @@ public class AppointmentServiceImpl implements AppointmentService{
     public void deleteAppointments() {
         appointmentRepository.deleteAll();
     }
+
+    @Override
+    public Page<Appointment> appointmentPageable(Pageable pageable) {
+        return appointmentRepository.findAll(pageable);
+    }
+
 }

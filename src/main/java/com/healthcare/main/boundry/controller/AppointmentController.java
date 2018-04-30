@@ -11,6 +11,8 @@ import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.*;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
@@ -70,6 +72,21 @@ public class AppointmentController {
     {
         List<Appointment> appointmentListDb = appointmentService.getAppointments();
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentListDb);
+    }
+
+    @GetMapping(value="/filter")
+    public List<AppointmentDto> appointmentPageable(Pageable pageable)
+    {
+        Page<Appointment> appointments = appointmentService.appointmentPageable(pageable);
+        List<Appointment> appointmentList = new ArrayList<>();
+
+        //TODO: refactor
+        for(Appointment appointment: appointments)
+        {
+            appointmentList.add(appointment);
+        }
+
+        return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentList);
     }
 
     /**
