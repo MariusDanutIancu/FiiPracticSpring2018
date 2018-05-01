@@ -29,9 +29,10 @@ You can download/clone/fork this project for teaching purposes.
 ## Usage  
 
 You can test api requests at the following link on a local server: `http://localhost:8080/api/<api_version>/<resource>`
+
 ### Examples:
 * Doctor get request (http://localhost:8080/api/0.1/doctors)
-* Doctor get request on id: (http://localhost:8080/api/0.1/doctors/1)
+* Doctor get request on id: (http://localhost:8080/api/0.1/doctors/<doctor_id>)
 * Doctor post request: (http://localhost:8080/api/0.1/doctors) 
 ```json
 {
@@ -44,7 +45,7 @@ You can test api requests at the following link on a local server: `http://local
       "street": "string"
     },
    "email": {
-      "email": "string",
+      "email": "string"
    },
    "firstName": "string",
    "function": "string",
@@ -55,7 +56,7 @@ You can test api requests at the following link on a local server: `http://local
 }    
 ```   
 * Patient get request (http://localhost:8080/api/0.1/patients)
-* Patient get request on id: (http://localhost:8080/api/0.1/patients/1)
+* Patient get request on id: (http://localhost:8080/api/0.1/patients/<patient_id>)
 * Patient post request: (http://localhost:8080/api/0.1/patients) 
 ```json
 {
@@ -69,29 +70,26 @@ You can test api requests at the following link on a local server: `http://local
    },
    "age": 0,
    "email": {
-     "email": "string",
+     "email": "string"
    },
    "firstName": "string",
    "lastName": "string",
-   "patient_id": 0,
    "phoneNumber": {
      "phoneNumber": "string"
    }
 } 
 ```    
 * Appointment get request (http://localhost:8080/api/0.1/appointments)
-* Appointment get request on id: (http://localhost:8080/api/0.1/appointments/1)
-* Appointment get request with filter: (http://localhost:8080/api/0.1/appointments?doctorid=1)
+* Appointment get request on id: (http://localhost:8080/api/0.1/appointments/<appointment_id>)
+* Appointment get request with filter: (http://localhost:8080/api/0.1/appointments?doctorid=<doctor_id>)
 * Future appointment get request: (http://localhost:8080/api/0.1/appointments/future_appointments)
-* Future appointment get request with filter: (http://localhost:8080/api/0.1/appointments/future_appointments/filter?doctorid=1)  
+* Future appointment get request with filter: (http://localhost:8080/api/0.1/appointments/future_appointments/filter?doctorid=<doctor_id>)  
 * Appointment post request: (http://localhost:8080/api/0.1/appointments)
 ```json
 {
    "cancel": true,
    "cause": "string",
-   "doctor_id": 0,
    "endTime": "2018-04-16T14:07:34.489Z",
-   "patient_id": 0,
    "startTime": "2018-04-16T14:07:34.489Z"
 }    
 ```   
@@ -101,7 +99,7 @@ You can test api requests at the following link on a local server: `http://local
    "appointment_id": 0,
    "cancel": true,
    "doctor_id": 0,
-   "patient_id": 0,
+   "patient_id": 0
 }
 ```   
 ## Running the tests   
