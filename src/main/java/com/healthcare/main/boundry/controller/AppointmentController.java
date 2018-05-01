@@ -11,6 +11,7 @@ import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.*;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,21 +27,21 @@ public class AppointmentController {
     private DoctorService doctorService;
     private PatientService patientService;
     private EmailService emailService;
+    private MessageSource messageSource;
 
     //template used to add an hour to a java.util.Date object
     private static final long HOUR_IN_MILLISECONDS = 3600*1000;
 
-    //template used to build a specific email message
-    private static final String APPOINTMENT_EMAIL_MESSAGE_TEMPLATE =
-            "You can see your appointment at http://localhost:8080/api/0.1/appointments/%s";
+    private static final String APPOINTMENT_URL = "http://localhost:8080/api/0.1/appointments/%s";
 
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
-                                 PatientService patientService, EmailService emailService) {
+                                 PatientService patientService, EmailService emailService, MessageSource messageSource) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.emailService = emailService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -245,8 +246,13 @@ public class AppointmentController {
         appointment = appointmentService.saveAppointment(appointment);
 
 
-        EmailUtil email = emailService.getEmail(doctorDB, "Appointment set",
-                String.format(APPOINTMENT_EMAIL_MESSAGE_TEMPLATE, appointment.getId()));
+        String message = String.format(messageSource.getMessage("appointment.created", null, Locale.getDefault()), APPOINTMENT_URL);
+        message = String.format(message, appointment.getId());
+
+        EmailUtil email = emailService.getEmail(doctorDB, "Appointment set", message);
+        emailService.sendEmailHttp(email);
+
+        email = emailService.getEmail(patientDB, "Appointment set", message);
         emailService.sendEmailHttp(email);
 
         return AppointmentMapper.MAPPER.toAppointmentDto(appointment);

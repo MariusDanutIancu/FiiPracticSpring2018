@@ -10,9 +10,11 @@ import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Locale;
 
 
 @RestController
@@ -21,16 +23,16 @@ public class PatientController
 {
     private PatientService patientService;
     private EmailService emailService;
+    private MessageSource messageSource;
 
-    //template used to build a specific email message
-    private static final String PATIENT_EMAIL_MESSAGE_TEMPLATE =
-            "You can see your appointment at http://localhost:8080/api/0.1/patients/%s";
+    private static final String PATIENT_URL =  "http://localhost:8080/api/0.1/patients/%s";
 
     @Autowired
-    public PatientController(PatientService patientService,  EmailService emailService)
+    public PatientController(PatientService patientService,  EmailService emailService, MessageSource messageSource)
     {
         this.patientService = patientService;
         this.emailService = emailService;
+        this.messageSource = messageSource;
     }
 
     /**
@@ -80,8 +82,11 @@ public class PatientController
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
 
+        String message = String.format(messageSource.getMessage("account.created.patient", null, Locale.getDefault()), PATIENT_URL);
+        message = String.format(message, patient.getId());
+
         EmailUtil email = emailService.getEmail(patient, "Account created",
-                String.format(PATIENT_EMAIL_MESSAGE_TEMPLATE, patient.getId()));
+                String.format(message, patient.getId()));
         emailService.sendEmailHttp(email);
 
         return PatientMapper.MAPPER.toPatientDto(patient);
