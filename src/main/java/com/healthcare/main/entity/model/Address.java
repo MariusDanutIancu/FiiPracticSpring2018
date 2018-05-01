@@ -17,15 +17,15 @@ public class Address
     private String street;
 
     @Column(name="county")
-    @Size(min = 2, max = 50, message = "County must be between 2 and 20 characters")
+    @Size(min = 2, max = 100, message = "County must be between 2 and 20 characters")
     private String county;
 
     @Column(name="city")
-    @Size(min = 2, max = 25, message = "City must be between 2 and 20 characters")
+    @Size(min = 2, max = 100, message = "City must be between 2 and 20 characters")
     private String city;
 
     @Column(name="state")
-    @Size(min = 2, max = 25, message = "State must be between 2 and 20 characters")
+    @Size(min = 2, max = 100, message = "State must be between 2 and 20 characters")
     private String state;
 
     @Column(name="postal_code")

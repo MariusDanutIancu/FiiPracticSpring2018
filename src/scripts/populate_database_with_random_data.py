@@ -104,13 +104,10 @@ def get_address(api_json):
     :return:
     """
 
-    # api_json["location"]["street"]
-    # api_json["location"]["state"]
-    # api_json["location"]["city"]
     address = {
-        "street": "place_holder",
-        "county": "place_holder",
-        "city": "place_holder",
+        "street": api_json["location"]["street"],
+        "county": api_json["location"]["state"],
+        "city": api_json["location"]["city"],
         "state": "place_holder",
         "postal_code": api_json["location"]["postcode"],
         "country": "place_holder"
