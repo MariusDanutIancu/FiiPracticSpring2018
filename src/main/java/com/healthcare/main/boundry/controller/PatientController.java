@@ -27,6 +27,9 @@ public class PatientController
     private MessageSource messageSource;
     private CustomProperties customProps;
 
+    //templates used in error messages
+    private static final String PATIENT_NOT_FOUND_TEMPLATE = "Patient with id=%s was not found.";;
+
     @Autowired
     public PatientController(PatientService patientService,  EmailService emailService, MessageSource messageSource,
                              CustomProperties customProps)
@@ -47,12 +50,12 @@ public class PatientController
     @GetMapping(value="/{id}")
     public PatientDto getPatient(@PathVariable("id") Long id) throws NotFoundException
     {
-        Patient patient = patientService.getPatient(id);
-        if(patient == null)
+        Patient patientEntity = patientService.getPatient(id);
+        if(patientEntity == null)
         {
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
         }
-        return PatientMapper.MAPPER.toPatientDto(patient);
+        return PatientMapper.MAPPER.toPatientDto(patientEntity);
     }
 
     /**
@@ -64,12 +67,12 @@ public class PatientController
     @GetMapping
     public List<PatientDto> getPatients() throws NotFoundException {
 
-        List<Patient> patientListDb = patientService.getAllPatients();
-        if(patientListDb.size() == 0)
+        List<Patient> patientListEntity = patientService.getAllPatients();
+        if(patientListEntity.isEmpty())
         {
             throw new NotFoundException("There are no patients in the database.");
         }
-        return PatientMapper.MAPPER.toPatientsDto(patientListDb);
+        return PatientMapper.MAPPER.toPatientsDto(patientListEntity);
     }
 
     /**
@@ -125,15 +128,14 @@ public class PatientController
             throw new BadRequestException("The id is not the same with id from object");
         }
 
-        Patient patientDb = patientService.getPatient(id);
-        if(patientDb == null)
+        Patient patientEntity = patientService.getPatient(id);
+        if(patientEntity == null)
         {
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
         }
 
-        PatientMapper.MAPPER.toPatient(patientDto, patientDb);
-        patientDb = patientService.updatePatient(patientDb);
-        return PatientMapper.MAPPER.toPatientDto(patientDb);
+        PatientMapper.MAPPER.toPatient(patientDto, patientEntity);
+        return PatientMapper.MAPPER.toPatientDto(patientService.updatePatient(patientEntity));
     }
 
     /**
@@ -146,11 +148,11 @@ public class PatientController
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void deletePatient(@PathVariable("id") Long id) throws NotFoundException
     {
-        Patient patient = patientService.getPatient(id);
-        if(patient == null){
-            throw new NotFoundException(String.format("Patient with id=%s was not found.", id));
+        Patient patientEntity = patientService.getPatient(id);
+        if(patientEntity == null){
+            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
         }
-        patientService.deletePatient(patient);
+        patientService.deletePatient(patientEntity);
     }
 
     /**
