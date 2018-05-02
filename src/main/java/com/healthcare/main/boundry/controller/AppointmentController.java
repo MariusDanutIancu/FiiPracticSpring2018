@@ -9,6 +9,7 @@ import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.*;
+import com.healthcare.main.properties.CustomProperties;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -28,20 +29,21 @@ public class AppointmentController {
     private PatientService patientService;
     private EmailService emailService;
     private MessageSource messageSource;
+    private CustomProperties customProps;
 
     //template used to add an hour to a java.util.Date object
     private static final long HOUR_IN_MILLISECONDS = 3600*1000;
 
-    private static final String APPOINTMENT_URL = "http://localhost:8080/api/0.1/appointments/%s";
-
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
-                                 PatientService patientService, EmailService emailService, MessageSource messageSource) {
+                                 PatientService patientService, EmailService emailService, MessageSource messageSource,
+                                 CustomProperties customProps) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.emailService = emailService;
         this.messageSource = messageSource;
+        this.customProps = customProps;
     }
 
     /**
@@ -246,8 +248,8 @@ public class AppointmentController {
         appointment = appointmentService.saveAppointment(appointment);
 
 
-        String message = String.format(messageSource.getMessage("appointment.created", null, Locale.getDefault()), APPOINTMENT_URL);
-        message = String.format(message, appointment.getId());
+        String message = String.format(messageSource.getMessage("appointment.created", null, Locale.getDefault()), customProps.getAppointmentsurl());
+        message += appointment.getId();
 
         EmailUtil email = emailService.getEmail(doctorDB, "Appointment set", message);
         emailService.sendEmailHttp(email);

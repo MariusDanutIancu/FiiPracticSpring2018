@@ -8,6 +8,7 @@ import com.healthcare.main.boundry.mapper.DoctorMapper;
 import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
+import com.healthcare.main.properties.CustomProperties;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -23,14 +24,15 @@ public class DoctorController
     private DoctorService doctorService;
     private EmailService emailService;
     private MessageSource messageSource;
-
-    private static final String DOCTOR_URL = "http://localhost:8080/api/0.1/doctors/%s";
+    private CustomProperties customProps;
 
     @Autowired
-    public DoctorController(DoctorService doctorService, EmailService emailService, MessageSource messageSource) {
+    public DoctorController(DoctorService doctorService, EmailService emailService, MessageSource messageSource,
+                            CustomProperties customProps) {
         this.doctorService = doctorService;
         this.emailService = emailService;
         this.messageSource = messageSource;
+        this.customProps = customProps;
     }
 
     /**
@@ -81,8 +83,8 @@ public class DoctorController
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
 
-        String message = String.format(messageSource.getMessage("account.created.doctor", null, Locale.getDefault()), DOCTOR_URL);
-        message = String.format(message, doctor.getId());
+        String message = String.format(messageSource.getMessage("account.created.doctor", null, Locale.getDefault()), customProps.getDoctorssurl());
+        message += doctor.getId();
 
         EmailUtil email = emailService.getEmail(doctor, "Account created",
                 String.format(message, doctor.getId()));
@@ -158,5 +160,4 @@ public class DoctorController
     {
         doctorService.deleteAllDoctors();
     }
-
 }

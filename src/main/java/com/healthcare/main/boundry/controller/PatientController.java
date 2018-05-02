@@ -8,6 +8,7 @@ import com.healthcare.main.boundry.mapper.PatientMapper;
 import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
+import com.healthcare.main.properties.CustomProperties;
 import com.healthcare.main.util.email.EmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -24,15 +25,16 @@ public class PatientController
     private PatientService patientService;
     private EmailService emailService;
     private MessageSource messageSource;
-
-    private static final String PATIENT_URL =  "http://localhost:8080/api/0.1/patients/%s";
+    private CustomProperties customProps;
 
     @Autowired
-    public PatientController(PatientService patientService,  EmailService emailService, MessageSource messageSource)
+    public PatientController(PatientService patientService,  EmailService emailService, MessageSource messageSource,
+                             CustomProperties customProps)
     {
         this.patientService = patientService;
         this.emailService = emailService;
         this.messageSource = messageSource;
+        this.customProps = customProps;
     }
 
     /**
@@ -82,8 +84,8 @@ public class PatientController
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
 
-        String message = String.format(messageSource.getMessage("account.created.patient", null, Locale.getDefault()), PATIENT_URL);
-        message = String.format(message, patient.getId());
+        String message = String.format(messageSource.getMessage("account.created.patient", null, Locale.getDefault()), customProps.getPatientsurl());
+        message += patient.getId();
 
         EmailUtil email = emailService.getEmail(patient, "Account created",
                 String.format(message, patient.getId()));

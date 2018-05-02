@@ -2,6 +2,8 @@ package com.healthcare.main.boundry.controller;
 
 import com.healthcare.main.boundry.dto.ApiDto;
 import com.healthcare.main.aspects.LogExecutionTime;
+import com.healthcare.main.properties.CustomProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value="/")
 public class ApiController {
+
+
 
     /**
      * To be updated
