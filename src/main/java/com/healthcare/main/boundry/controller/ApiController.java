@@ -20,6 +20,11 @@ public class ApiController {
         this.apiProperties=apiProperties;
     }
 
+    /**
+     * Get request
+     *
+     * @return an object that contains details about application
+     */
     @GetMapping
     @LogExecutionTime
     public ApiDto getInfo()
