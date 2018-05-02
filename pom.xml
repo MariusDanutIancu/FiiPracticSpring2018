@@ -64,11 +64,6 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<!-- jdbc -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -127,13 +122,6 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>1.8.12</version>
 			<scope>compile</scope>
-		</dependency>
-
-		<!-- Spring Security OAuth2-->
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
-			<version>${springsecurityoauth2.version}</version>
 		</dependency>
 
 		<!-- others -->
