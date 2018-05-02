@@ -1,7 +1,7 @@
 package com.healthcare.main.control.service;
 
 import com.healthcare.main.entity.model.Person;
-import com.healthcare.main.util.email.EmailUtil;
+import com.healthcare.main.common.EmailCommon;
 import freemarker.template.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,8 +32,8 @@ public class EmailServiceImpl implements EmailService {
     private static final Pattern REGEX_EMAIL_EXAMPLE_PATTERN = Pattern.compile("(@example)");
 
     @Override
-    public EmailUtil getEmail(Person person, String subject, String message) {
-        EmailUtil email = new EmailUtil();
+    public EmailCommon getEmail(Person person, String subject, String message) {
+        EmailCommon email = new EmailCommon();
         email.setFrom("test.demo.fii.practic.spring.2018@gmail.com");
         email.setTo(person.getEmail().getEmail());
         email.setSubject(subject);
@@ -47,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public boolean validateEmail(EmailUtil email) {
+    public boolean validateEmail(EmailCommon email) {
         Matcher m = REGEX_EMAIL_EXAMPLE_PATTERN.matcher(email.getTo());
         if(m.find())
         {
@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmailText(EmailUtil email) {
+    public void sendEmailText(EmailCommon email) {
 
         if(validateEmail(email)) {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -75,7 +75,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendEmailHttp(EmailUtil email) {
+    public void sendEmailHttp(EmailCommon email) {
 
         if(validateEmail(email)) {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();

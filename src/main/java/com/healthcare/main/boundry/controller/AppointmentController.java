@@ -10,7 +10,7 @@ import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.entity.model.*;
 import com.healthcare.main.properties.CustomProperties;
-import com.healthcare.main.util.email.EmailUtil;
+import com.healthcare.main.common.EmailCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -251,7 +251,7 @@ public class AppointmentController {
         String message = String.format(messageSource.getMessage("appointment.created", null, Locale.getDefault()), customProps.getAppointmentsurl());
         message += appointment.getId();
 
-        EmailUtil email = emailService.getEmail(doctorDB, "Appointment set", message);
+        EmailCommon email = emailService.getEmail(doctorDB, "Appointment set", message);
         emailService.sendEmailHttp(email);
 
         email = emailService.getEmail(patientDB, "Appointment set", message);

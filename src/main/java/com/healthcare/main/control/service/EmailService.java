@@ -1,7 +1,7 @@
 package com.healthcare.main.control.service;
 
 import com.healthcare.main.entity.model.Person;
-import com.healthcare.main.util.email.EmailUtil;
+import com.healthcare.main.common.EmailCommon;
 
 public interface EmailService {
 
@@ -12,24 +12,24 @@ public interface EmailService {
      * @param message
      * @return
      */
-    EmailUtil getEmail(Person person, String subject, String message);
+    EmailCommon getEmail(Person person, String subject, String message);
 
     /**
      *
      * @param email
      * @return
      */
-    boolean validateEmail(EmailUtil email);
+    boolean validateEmail(EmailCommon email);
 
     /**
      *
      * @param email
      */
-    void sendEmailText(EmailUtil email);
+    void sendEmailText(EmailCommon email);
 
     /**
      *
      * @param email
      */
-    void sendEmailHttp(EmailUtil email);
+    void sendEmailHttp(EmailCommon email);
 }

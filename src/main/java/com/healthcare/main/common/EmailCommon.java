@@ -1,8 +1,8 @@
-package com.healthcare.main.util.email;
+package com.healthcare.main.common;
 
 import java.util.Map;
 
-public class EmailUtil
+public class EmailCommon
 {
     private String from;
     private String to;

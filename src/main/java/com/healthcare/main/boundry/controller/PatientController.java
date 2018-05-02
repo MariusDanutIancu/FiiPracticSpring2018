@@ -9,7 +9,7 @@ import com.healthcare.main.control.service.EmailService;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.properties.CustomProperties;
-import com.healthcare.main.util.email.EmailUtil;
+import com.healthcare.main.common.EmailCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -87,7 +87,7 @@ public class PatientController
         String message = String.format(messageSource.getMessage("account.created.patient", null, Locale.getDefault()), customProps.getPatientsurl());
         message += patient.getId();
 
-        EmailUtil email = emailService.getEmail(patient, "Account created",
+        EmailCommon email = emailService.getEmail(patient, "Account created",
                 String.format(message, patient.getId()));
         emailService.sendEmailHttp(email);
 
