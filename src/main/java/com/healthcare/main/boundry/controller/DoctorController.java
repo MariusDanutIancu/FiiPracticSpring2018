@@ -95,7 +95,7 @@ public class DoctorController
         doctor = doctorService.saveDoctor(doctor);
 
         String message = String.format(messageSource.getMessage("account.created.doctor",
-                null, Locale.getDefault()), customProps.getDoctorssurl()) + doctor.getId();;
+                null, Locale.getDefault()), customProps.getDoctorssurl()) + doctor.getId();
 
         emailService.sendEmailHttp(emailService.getEmail(doctor, "Account created",
                 String.format(message, doctor.getId())));
