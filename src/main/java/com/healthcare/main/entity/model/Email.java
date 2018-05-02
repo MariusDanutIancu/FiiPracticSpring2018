@@ -1,5 +1,7 @@
 package com.healthcare.main.entity.model;
 
+import com.healthcare.main.validators.EmailAnnotation;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,7 +14,7 @@ public class Email
     private Long id;
 
     @Column(name = "email")
-    @javax.validation.constraints.Email
+    @EmailAnnotation
     private String email;
 
     public Long getId() {
