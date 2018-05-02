@@ -26,6 +26,9 @@ public class DoctorController
     private MessageSource messageSource;
     private CustomProperties customProps;
 
+    //templates used in error messages
+    private static final String DOCTOR_NOT_FOUND_TEMPLATE = "Doctor with id=%s was not found.";
+
     @Autowired
     public DoctorController(DoctorService doctorService, EmailService emailService, MessageSource messageSource,
                             CustomProperties customProps) {
@@ -45,12 +48,12 @@ public class DoctorController
     @GetMapping(value="/{id}")
     public DoctorDto getDoctor(@PathVariable("id") Long id) throws NotFoundException
     {
-        Doctor doctor = doctorService.getDoctor(id);
-        if(doctor == null)
+        Doctor doctorEntity = doctorService.getDoctor(id);
+        if(doctorEntity == null)
         {
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
         }
-        return DoctorMapper.MAPPER.toDoctorDto(doctor);
+        return DoctorMapper.MAPPER.toDoctorDto(doctorEntity);
     }
 
     /**
@@ -62,12 +65,12 @@ public class DoctorController
     @GetMapping
     public List<DoctorDto> getDoctors() throws NotFoundException
     {
-        List<Doctor> doctorListDb = doctorService.getAllDoctors();
-        if(doctorListDb.size() == 0)
+        List<Doctor> doctorListEntity = doctorService.getAllDoctors();
+        if(doctorListEntity.isEmpty())
         {
             throw new NotFoundException("There are no doctors in the database.");
         }
-        return DoctorMapper.MAPPER.toDoctorsDto(doctorListDb);
+        return DoctorMapper.MAPPER.toDoctorsDto(doctorListEntity);
     }
 
     /**
@@ -83,8 +86,8 @@ public class DoctorController
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
 
-        String message = String.format(messageSource.getMessage("account.created.doctor", null, Locale.getDefault()), customProps.getDoctorssurl());
-        message += doctor.getId();
+        String message = String.format(messageSource.getMessage("account.created.doctor",
+                null, Locale.getDefault()), customProps.getDoctorssurl()) + doctor.getId();;
 
         EmailCommon email = emailService.getEmail(doctor, "Account created",
                 String.format(message, doctor.getId()));
@@ -123,15 +126,13 @@ public class DoctorController
             throw new BadRequestException("The id is not the same with id from object");
         }
 
-        Doctor doctorDb = doctorService.getDoctor(id);
-        if(doctorDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+        Doctor doctorEntity = doctorService.getDoctor(id);
+        if(doctorEntity == null){
+            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
         }
 
-        DoctorMapper.MAPPER.toDoctor(doctorDto, doctorDb);
-        doctorDb = doctorService.updateDoctor(doctorDb);
-
-        return DoctorMapper.MAPPER.toDoctorDto(doctorDb);
+        DoctorMapper.MAPPER.toDoctor(doctorDto, doctorEntity);
+        return DoctorMapper.MAPPER.toDoctorDto( doctorService.updateDoctor(doctorEntity));
     }
 
     /**
@@ -146,7 +147,7 @@ public class DoctorController
     {
         Doctor doctorDb  = doctorService.getDoctor(id);
         if(doctorDb == null){
-            throw new NotFoundException(String.format("Doctor with id=%s was not found.", id));
+            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
         }
         doctorService.deleteDoctor(doctorDb);
     }
