@@ -44,7 +44,7 @@ public interface AppointmentService {
      * @param patient
      * @return
      */
-    List<Appointment> getAppointmentsDoctorAndPatient(Doctor doctor, Patient patient);
+    List<Appointment> getAppointmentsByDoctorAndPatient(Doctor doctor, Patient patient);
 
     /**
      *
