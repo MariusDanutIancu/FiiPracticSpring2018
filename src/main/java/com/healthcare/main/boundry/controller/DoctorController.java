@@ -10,10 +10,18 @@ import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.properties.CustomProperties;
 import com.healthcare.main.common.EmailCommon;
+import com.sun.jndi.toolkit.url.Uri;
+import io.swagger.annotations.ResponseHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,15 +53,15 @@ public class DoctorController
      * @return requested doctor
      * @throws NotFoundException no doctor with requested id found in database
      */
-    @GetMapping(value="/{id}")
-    public DoctorDto getDoctor(@PathVariable("id") Long id) throws NotFoundException
+    @GetMapping(value="/{id}", produces = {MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
+    public ResponseEntity<DoctorDto> getDoctor(@PathVariable("id") Long id) throws NotFoundException
     {
         Doctor doctorEntity = doctorService.getDoctor(id);
         if(doctorEntity == null)
         {
             throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
         }
-        return DoctorMapper.MAPPER.toDoctorDto(doctorEntity);
+        return ResponseEntity.ok().body(DoctorMapper.MAPPER.toDoctorDto(doctorEntity));
     }
 
     /**
@@ -63,6 +71,7 @@ public class DoctorController
      * @throws NotFoundException no doctors found in the database
      */
     @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
     public List<DoctorDto> getDoctors() throws NotFoundException
     {
         List<Doctor> doctorListEntity = doctorService.getAllDoctors();
@@ -80,8 +89,7 @@ public class DoctorController
      * @return the saved doctor
      */
     @PostMapping
-    @ResponseStatus(value = HttpStatus.CREATED)
-    public DoctorDto saveDoctor(@RequestBody DoctorDto doctorDto)
+    public ResponseEntity<DoctorDto> postDoctor(@RequestBody DoctorDto doctorDto, UriComponentsBuilder ucBuilder)
     {
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
@@ -89,11 +97,14 @@ public class DoctorController
         String message = String.format(messageSource.getMessage("account.created.doctor",
                 null, Locale.getDefault()), customProps.getDoctorssurl()) + doctor.getId();;
 
-        EmailCommon email = emailService.getEmail(doctor, "Account created",
-                String.format(message, doctor.getId()));
-        emailService.sendEmailHttp(email);
+        emailService.sendEmailHttp(emailService.getEmail(doctor, "Account created",
+                String.format(message, doctor.getId())));
 
-        return DoctorMapper.MAPPER.toDoctorDto(doctor);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = ucBuilder.path("/api/0.1/doctors/{id}").buildAndExpand(doctor.getId()).toUri();
+        headers.setLocation(uri);
+
+        return ResponseEntity.created(uri).headers(headers).body(DoctorMapper.MAPPER.toDoctorDto(doctor));
     }
 
     /**
@@ -105,6 +116,7 @@ public class DoctorController
      * @throws MethodNotAllowedException this method is not allowed
      */
     @PostMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     public Doctor saveDoctor_not_allowed(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
@@ -120,6 +132,7 @@ public class DoctorController
      * @throws NotFoundException doctor not found
      */
     @PutMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
     public DoctorDto updateDoctor(@PathVariable("id") Long id, @RequestBody DoctorDto doctorDto) throws BadRequestException, NotFoundException
     {
         if(!id.equals(doctorDto.getDoctor_id())){
