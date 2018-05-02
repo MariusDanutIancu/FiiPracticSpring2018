@@ -59,6 +59,7 @@ public class AppointmentController {
      * @throws NotFoundException no appointment with requested id found in database
      */
     @GetMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
     public AppointmentDto getAppointment(@PathVariable("id") Long id) throws NotFoundException
     {
         Appointment appointmentEntity = appointmentService.getAppointment(id);
@@ -76,6 +77,7 @@ public class AppointmentController {
      * @return all appointments that are in the database
      */
     @GetMapping()
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> getAllAppointments()
     {
         List<Appointment> appointmentListEntity = appointmentService.getAppointments();
@@ -89,6 +91,7 @@ public class AppointmentController {
      * @return an appointment list
      */
     @GetMapping(value="/filter")
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> appointmentPageable(Pageable pageable)
     {
         Page<Appointment> appointmentsPageable = appointmentService.appointmentPageable(pageable);
@@ -112,6 +115,7 @@ public class AppointmentController {
      * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = { "patientid", "doctorid" })
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> findAllByDoctorAndPatient(@RequestParam("patientid") Long patientid, @RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
         Doctor doctorEntity = doctorService.getDoctor(doctorid);
@@ -136,6 +140,7 @@ public class AppointmentController {
      * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = "doctorid" )
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> findByDoctor(@RequestParam("doctorid") Long doctorid) throws NotFoundException
     {
         Doctor doctorEntity = doctorService.getDoctor(doctorid);
@@ -154,6 +159,7 @@ public class AppointmentController {
      * @throws NotFoundException no appointments found
      */
     @GetMapping(value="/filter", params = "patientid")
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> findByPatient(@RequestParam("patientid") Long patientid) throws NotFoundException
     {
         Patient patientEntity = patientService.getPatient(patientid);
@@ -171,6 +177,7 @@ public class AppointmentController {
      * @return a list of appointments
      */
     @GetMapping(value="/filter", params = "took-place")
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> findByTookPlace(@RequestParam("took-place") boolean tookPlace)
     {
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService.findAllByTookPlace(tookPlace));
@@ -183,6 +190,7 @@ public class AppointmentController {
      * @throws NotFoundException no appointments are found
      */
     @GetMapping(value="/future_appointments/filter", params = {"doctorid"})
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> findAllByDoctorAndEndTimeGreaterThan(@RequestParam("doctorid") Long doctorid)
             throws NotFoundException
     {
@@ -201,6 +209,7 @@ public class AppointmentController {
      * @return a list of appointments
      */
     @GetMapping(value="/future_appointments")
+    @ResponseStatus(value = HttpStatus.OK)
     public List<AppointmentDto> getFutureAppointments()
     {
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService.findAllByEndTimeGreaterThan(new Date()));
@@ -266,6 +275,7 @@ public class AppointmentController {
      * @throws BadRequestException appointment took place or it will take place in the next hour
      */
     @PutMapping(value="/cancel_appointment")
+    @ResponseStatus(value = HttpStatus.OK)
     public AppointmentDto putAppointment(@RequestBody AppointmentDto appointmentDto)
             throws NotFoundException, BadRequestException
     {
@@ -310,6 +320,7 @@ public class AppointmentController {
      * @throws NotFoundException the appointment/doctor/patient was not found
      */
     @PutMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
     public AppointmentDto updateAppointment(@PathVariable("id") Long id, @RequestBody AppointmentDto appointmentDto)
             throws BadRequestException, NotFoundException
     {

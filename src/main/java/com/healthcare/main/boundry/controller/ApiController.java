@@ -4,8 +4,10 @@ import com.healthcare.main.boundry.dto.ApiDto;
 import com.healthcare.main.aspects.LogExecutionTime;
 import com.healthcare.main.properties.ApiProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,6 +29,7 @@ public class ApiController {
      */
     @GetMapping
     @LogExecutionTime
+    @ResponseStatus(value = HttpStatus.OK)
     public ApiDto getInfo()
     {
         ApiDto apiDtoResponse = new ApiDto();

@@ -48,6 +48,7 @@ public class PatientController
      * @throws NotFoundException no patient with requested id found in database
      */
     @GetMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
     public PatientDto getPatient(@PathVariable("id") Long id) throws NotFoundException
     {
         Patient patientEntity = patientService.getPatient(id);
@@ -65,6 +66,7 @@ public class PatientController
      * @throws NotFoundException no patients found in the database
      */
     @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
     public List<PatientDto> getPatients() throws NotFoundException {
 
         List<Patient> patientListEntity = patientService.getAllPatients();
@@ -87,12 +89,11 @@ public class PatientController
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
 
-        String message = String.format(messageSource.getMessage("account.created.patient", null, Locale.getDefault()), customProps.getPatientsurl());
-        message += patient.getId();
+        String message = String.format(messageSource.getMessage("account.created.patient",
+                null, Locale.getDefault()), customProps.getPatientsurl()) + patient.getId();
 
-        EmailCommon email = emailService.getEmail(patient, "Account created",
-                String.format(message, patient.getId()));
-        emailService.sendEmailHttp(email);
+        emailService.sendEmailHttp(emailService.getEmail(patient, "Account created",
+                String.format(message, patient.getId())));
 
         return PatientMapper.MAPPER.toPatientDto(patient);
     }
@@ -106,6 +107,7 @@ public class PatientController
      * @throws MethodNotAllowedException this method is not allowed
      */
     @PostMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
     {
         throw new MethodNotAllowedException("Method is not allowed.");
@@ -121,6 +123,7 @@ public class PatientController
      * @throws NotFoundException patient not found
      */
     @PutMapping(value="/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
     public PatientDto updatePatient(@PathVariable("id") Long id, @RequestBody PatientDto patientDto) throws BadRequestException, NotFoundException
     {
         if(!id.equals(patientDto.getPatient_id()))
