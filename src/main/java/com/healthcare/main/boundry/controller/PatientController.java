@@ -10,13 +10,10 @@ import com.healthcare.main.control.service.MessageService;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.properties.CustomProperties;
-import com.healthcare.main.common.EmailCommon;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Locale;
 
 
 @RestController

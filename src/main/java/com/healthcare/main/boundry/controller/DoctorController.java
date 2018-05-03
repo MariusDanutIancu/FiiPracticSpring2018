@@ -10,11 +10,7 @@ import com.healthcare.main.control.service.MessageService;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.properties.CustomProperties;
-import com.healthcare.main.common.EmailCommon;
-import com.sun.jndi.toolkit.url.Uri;
-import io.swagger.annotations.ResponseHeader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping(value="/api/0.1/doctors")
