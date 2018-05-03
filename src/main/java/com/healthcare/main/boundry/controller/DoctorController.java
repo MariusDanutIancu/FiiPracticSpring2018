@@ -52,7 +52,12 @@ public class DoctorController
         Doctor doctorEntity = doctorService.getDoctor(id);
         if(doctorEntity == null)
         {
-            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(
+                            messageService.getMessage("doctor.not.found.id"),
+                            id
+                    )
+            );
         }
         return ResponseEntity.ok().body(DoctorMapper.MAPPER.toDoctorDto(doctorEntity));
     }
@@ -70,7 +75,9 @@ public class DoctorController
         List<Doctor> doctorListEntity = doctorService.getAllDoctors();
         if(doctorListEntity.isEmpty())
         {
-            throw new NotFoundException("There are no doctors in the database.");
+            throw new NotFoundException(
+                    messageService.getMessage("doctor.not.found")
+            );
         }
         return DoctorMapper.MAPPER.toDoctorsDto(doctorListEntity);
     }
@@ -87,11 +94,18 @@ public class DoctorController
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
 
-        String message = String.format(messageService.getMessage("account.created.doctor.link"),
-                customProps.getDoctorssurl()) + doctor.getId();
+        String emailMessage = String.format(
+                messageService.getMessage("account.created.doctor.link"),
+                customProps.getDoctorssurl()
+        ) + doctor.getId();
 
-        emailService.sendEmailHttp(emailService.getEmail(doctor, "Account created",
-                String.format(message, doctor.getId())));
+        emailService.sendEmailHttp(
+                emailService.getEmail(
+                        doctor,
+                        messageService.getMessage("account.created.subject"),
+                        emailMessage
+                )
+        );
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = ucBuilder.path("/api/0.1/doctors/{id}").buildAndExpand(doctor.getId()).toUri();
@@ -112,7 +126,9 @@ public class DoctorController
     @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     public Doctor saveDoctor_not_allowed(@PathVariable("id") Long id, @RequestBody Doctor doctor) throws MethodNotAllowedException
     {
-        throw new MethodNotAllowedException("Method is not allowed.");
+        throw new MethodNotAllowedException(
+                messageService.getMessage("method.not.allowed")
+        );
     }
 
     /**
@@ -129,16 +145,25 @@ public class DoctorController
     public DoctorDto updateDoctor(@PathVariable("id") Long id, @RequestBody DoctorDto doctorDto) throws BadRequestException, NotFoundException
     {
         if(!id.equals(doctorDto.getDoctor_id())){
-            throw new BadRequestException("The id is not the same with id from object");
+            throw new BadRequestException(
+                    messageService.getMessage("bad.request.not.matching.id")
+            );
         }
 
         Doctor doctorEntity = doctorService.getDoctor(id);
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(
+                            messageService.getMessage("doctor.not.found.id"),
+                            id
+                    )
+            );
         }
 
         DoctorMapper.MAPPER.toDoctor(doctorDto, doctorEntity);
-        return DoctorMapper.MAPPER.toDoctorDto( doctorService.updateDoctor(doctorEntity));
+        return DoctorMapper.MAPPER.toDoctorDto(
+                doctorService.updateDoctor(doctorEntity)
+        );
     }
 
     /**
@@ -153,7 +178,12 @@ public class DoctorController
     {
         Doctor doctorDb  = doctorService.getDoctor(id);
         if(doctorDb == null){
-            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(
+                            messageService.getMessage("doctor.not.found.id"),
+                            id
+                    )
+            );
         }
         doctorService.deleteDoctor(doctorDb);
     }

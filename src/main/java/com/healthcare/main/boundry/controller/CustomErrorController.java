@@ -33,7 +33,11 @@ public class CustomErrorController implements ErrorController {
     @GetMapping(value = PATH)
     public ErrorDto error(HttpServletRequest request, HttpServletResponse response)
     {
-        return new ErrorDto(response.getStatus(), (String)getErrorAttributes(request, true).get("message"));
+        return new ErrorDto(
+                response.getStatus(),
+                (String)getErrorAttributes(request, true
+                ).get("message")
+        );
     }
 
     /**

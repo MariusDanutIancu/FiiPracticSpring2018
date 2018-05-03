@@ -49,7 +49,9 @@ public class PatientController
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null)
         {
-            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(messageService.getMessage("patient.not.found.id"), id)
+            );
         }
         return PatientMapper.MAPPER.toPatientDto(patientEntity);
     }
@@ -67,7 +69,9 @@ public class PatientController
         List<Patient> patientListEntity = patientService.getAllPatients();
         if(patientListEntity.isEmpty())
         {
-            throw new NotFoundException("There are no patients in the database.");
+            throw new NotFoundException(
+                    messageService.getMessage("patient.not.found")
+            );
         }
         return PatientMapper.MAPPER.toPatientsDto(patientListEntity);
     }
@@ -84,11 +88,18 @@ public class PatientController
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
 
-        String message = String.format(messageService.getMessage("account.created.patient.link"),
-                customProps.getPatientsurl()) + patient.getId();
+        String emailMessage = String.format(
+                messageService.getMessage("account.created.patient.link"),
+                customProps.getPatientsurl()
+        ) + patient.getId();
 
-        emailService.sendEmailHttp(emailService.getEmail(patient, "Account created",
-                String.format(message, patient.getId())));
+        emailService.sendEmailHttp(
+                emailService.getEmail(
+                        patient,
+                        messageService.getMessage("account.created.subject"),
+                        emailMessage
+                )
+        );
 
         return PatientMapper.MAPPER.toPatientDto(patient);
     }
@@ -105,7 +116,9 @@ public class PatientController
     @ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
     public Patient savePatient_not_allowed(@PathVariable("id") Long id, @RequestBody Patient patient) throws MethodNotAllowedException
     {
-        throw new MethodNotAllowedException("Method is not allowed.");
+        throw new MethodNotAllowedException(
+                messageService.getMessage("method.not.allowed")
+        );
     }
 
     /**
@@ -123,17 +136,26 @@ public class PatientController
     {
         if(!id.equals(patientDto.getPatient_id()))
         {
-            throw new BadRequestException("The id is not the same with id from object");
+            throw new BadRequestException(
+                    messageService.getMessage("bad.request.not.matching.id")
+            );
         }
 
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null)
         {
-            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(
+                            messageService.getMessage("patient.not.found.id"),
+                            id
+                    )
+            );
         }
 
         PatientMapper.MAPPER.toPatient(patientDto, patientEntity);
-        return PatientMapper.MAPPER.toPatientDto(patientService.updatePatient(patientEntity));
+        return PatientMapper.MAPPER.toPatientDto(
+                patientService.updatePatient(patientEntity)
+        );
     }
 
     /**
@@ -148,7 +170,12 @@ public class PatientController
     {
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null){
-            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
+            throw new NotFoundException(
+                    String.format(
+                            messageService.getMessage("patient.not.found.id"),
+                            id
+                    )
+            );
         }
         patientService.deletePatient(patientEntity);
     }
