@@ -255,14 +255,11 @@ public class AppointmentController {
         appointment = appointmentService.saveAppointment(appointment);
 
 
-        String message = String.format(messageSource.getMessage("Appointment.created", null,
+        String message = String.format(messageSource.getMessage("appointment.created", null,
                 Locale.getDefault()), customProps.getAppointmentsurl()) + appointment.getId();
 
-        EmailCommon email = emailService.getEmail(doctorEntity, "Appointment set", message);
-        emailService.sendEmailHttp(email);
-
-        email = emailService.getEmail(patientEntity, "Appointment set", message);
-        emailService.sendEmailHttp(email);
+        emailService.sendEmailHttp(emailService.getEmail(doctorEntity, "appointment set", message));
+        emailService.sendEmailHttp(emailService.getEmail(patientEntity, "appointment set", message));
 
         return AppointmentMapper.MAPPER.toAppointmentDto(appointment);
     }
