@@ -6,6 +6,7 @@ import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.DoctorMapper;
 import com.healthcare.main.control.service.EmailService;
+import com.healthcare.main.control.service.MessageService;
 import com.healthcare.main.entity.model.Doctor;
 import com.healthcare.main.control.service.DoctorService;
 import com.healthcare.main.properties.CustomProperties;
@@ -31,18 +32,15 @@ public class DoctorController
 {
     private DoctorService doctorService;
     private EmailService emailService;
-    private MessageSource messageSource;
+    private MessageService messageService;
     private CustomProperties customProps;
 
-    //templates used in error messages
-    private static final String DOCTOR_NOT_FOUND_TEMPLATE = "Doctor with id=%s was not found.";
-
     @Autowired
-    public DoctorController(DoctorService doctorService, EmailService emailService, MessageSource messageSource,
+    public DoctorController(DoctorService doctorService, EmailService emailService, MessageService messageService,
                             CustomProperties customProps) {
         this.doctorService = doctorService;
         this.emailService = emailService;
-        this.messageSource = messageSource;
+        this.messageService = messageService;
         this.customProps = customProps;
     }
 
@@ -59,7 +57,7 @@ public class DoctorController
         Doctor doctorEntity = doctorService.getDoctor(id);
         if(doctorEntity == null)
         {
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
         }
         return ResponseEntity.ok().body(DoctorMapper.MAPPER.toDoctorDto(doctorEntity));
     }
@@ -94,8 +92,8 @@ public class DoctorController
         Doctor doctor = DoctorMapper.MAPPER.toDoctor(doctorDto);
         doctor = doctorService.saveDoctor(doctor);
 
-        String message = String.format(messageSource.getMessage("account.created.doctor",
-                null, Locale.getDefault()), customProps.getDoctorssurl()) + doctor.getId();
+        String message = String.format(messageService.getMessage("account.created.doctor.link"),
+                customProps.getDoctorssurl()) + doctor.getId();
 
         emailService.sendEmailHttp(emailService.getEmail(doctor, "Account created",
                 String.format(message, doctor.getId())));
@@ -141,7 +139,7 @@ public class DoctorController
 
         Doctor doctorEntity = doctorService.getDoctor(id);
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
         }
 
         DoctorMapper.MAPPER.toDoctor(doctorDto, doctorEntity);
@@ -160,7 +158,7 @@ public class DoctorController
     {
         Doctor doctorDb  = doctorService.getDoctor(id);
         if(doctorDb == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), id));
         }
         doctorService.deleteDoctor(doctorDb);
     }

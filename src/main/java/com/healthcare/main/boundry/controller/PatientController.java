@@ -6,6 +6,7 @@ import com.healthcare.main.boundry.exception.MethodNotAllowedException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.PatientMapper;
 import com.healthcare.main.control.service.EmailService;
+import com.healthcare.main.control.service.MessageService;
 import com.healthcare.main.entity.model.Patient;
 import com.healthcare.main.control.service.PatientService;
 import com.healthcare.main.properties.CustomProperties;
@@ -24,19 +25,16 @@ public class PatientController
 {
     private PatientService patientService;
     private EmailService emailService;
-    private MessageSource messageSource;
+    private MessageService messageService;
     private CustomProperties customProps;
 
-    //templates used in error messages
-    private static final String PATIENT_NOT_FOUND_TEMPLATE = "Patient with id=%s was not found.";;
-
     @Autowired
-    public PatientController(PatientService patientService,  EmailService emailService, MessageSource messageSource,
+    public PatientController(PatientService patientService,  EmailService emailService, MessageService messageService,
                              CustomProperties customProps)
     {
         this.patientService = patientService;
         this.emailService = emailService;
-        this.messageSource = messageSource;
+        this.messageService = messageService;
         this.customProps = customProps;
     }
 
@@ -54,7 +52,7 @@ public class PatientController
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null)
         {
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
         }
         return PatientMapper.MAPPER.toPatientDto(patientEntity);
     }
@@ -89,8 +87,8 @@ public class PatientController
         Patient patient = PatientMapper.MAPPER.toPatient(patientDto);
         patient = patientService.savePatient(patient);
 
-        String message = String.format(messageSource.getMessage("account.created.patient",
-                null, Locale.getDefault()), customProps.getPatientsurl()) + patient.getId();
+        String message = String.format(messageService.getMessage("account.created.patient.link"),
+                customProps.getPatientsurl()) + patient.getId();
 
         emailService.sendEmailHttp(emailService.getEmail(patient, "Account created",
                 String.format(message, patient.getId())));
@@ -134,7 +132,7 @@ public class PatientController
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null)
         {
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
         }
 
         PatientMapper.MAPPER.toPatient(patientDto, patientEntity);
@@ -153,7 +151,7 @@ public class PatientController
     {
         Patient patientEntity = patientService.getPatient(id);
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), id));
         }
         patientService.deletePatient(patientEntity);
     }

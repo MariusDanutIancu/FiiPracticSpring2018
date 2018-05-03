@@ -4,15 +4,10 @@ import com.healthcare.main.boundry.dto.AppointmentDto;
 import com.healthcare.main.boundry.exception.BadRequestException;
 import com.healthcare.main.boundry.exception.NotFoundException;
 import com.healthcare.main.boundry.mapper.AppointmentMapper;
-import com.healthcare.main.control.service.AppointmentService;
-import com.healthcare.main.control.service.DoctorService;
-import com.healthcare.main.control.service.EmailService;
-import com.healthcare.main.control.service.PatientService;
+import com.healthcare.main.control.service.*;
 import com.healthcare.main.entity.model.*;
 import com.healthcare.main.properties.CustomProperties;
-import com.healthcare.main.common.EmailCommon;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,26 +23,21 @@ public class AppointmentController {
     private DoctorService doctorService;
     private PatientService patientService;
     private EmailService emailService;
-    private MessageSource messageSource;
+    private MessageService messageService;
     private CustomProperties customProps;
 
     //template used to add an hour to a java.util.Date object
     private static final long HOUR_IN_MILLISECONDS = 3600*1000;
 
-    //templates used in error messages
-    private static final String APPOINTMENT_NOT_FOUND_TEMPLATE = "Appointment with id=%s was not found.";
-    private static final String DOCTOR_NOT_FOUND_TEMPLATE = "Doctor with id=%s was not found.";
-    private static final String PATIENT_NOT_FOUND_TEMPLATE = "Patient with id=%s was not found.";
-
     @Autowired
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService,
-                                 PatientService patientService, EmailService emailService, MessageSource messageSource,
+                                 PatientService patientService, EmailService emailService, MessageService messageService,
                                  CustomProperties customProps) {
         this.appointmentService = appointmentService;
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.emailService = emailService;
-        this.messageSource = messageSource;
+        this.messageService = messageService;
         this.customProps = customProps;
     }
 
@@ -65,7 +55,7 @@ public class AppointmentController {
         Appointment appointmentEntity = appointmentService.getAppointment(id);
         if(appointmentEntity == null)
         {
-            throw new NotFoundException(String.format(APPOINTMENT_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("appointment.not.found.id"), id));
         }
 
         return AppointmentMapper.MAPPER.toAppointmentDto(appointmentEntity);
@@ -120,12 +110,12 @@ public class AppointmentController {
     {
         Doctor doctorEntity = doctorService.getDoctor(doctorid);
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, doctorid));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), doctorid));
         }
 
         Patient patientEntity = patientService.getPatient(patientid);
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, patientid));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), patientid));
         }
 
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService
@@ -145,7 +135,7 @@ public class AppointmentController {
     {
         Doctor doctorEntity = doctorService.getDoctor(doctorid);
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, doctorid));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), doctorid));
         }
 
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService.getAppointmentsByDoctor(doctorEntity));
@@ -164,7 +154,7 @@ public class AppointmentController {
     {
         Patient patientEntity = patientService.getPatient(patientid);
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, patientid));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), patientid));
         }
 
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService.getAppointmentsByPatient(patientEntity));
@@ -196,7 +186,7 @@ public class AppointmentController {
     {
         Doctor doctorEntity = doctorService.getDoctor(doctorid);
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, doctorid));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), doctorid));
         }
 
         return AppointmentMapper.MAPPER.toAppointmentsDto(appointmentService
@@ -229,12 +219,12 @@ public class AppointmentController {
     {
         Doctor doctorEntity = doctorService.getDoctor(appointmentDto.getDoctor_id());
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, appointmentDto.getDoctor_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), appointmentDto.getDoctor_id()));
         }
 
         Patient patientEntity = patientService.getPatient(appointmentDto.getPatient_id());
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, appointmentDto.getPatient_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), appointmentDto.getPatient_id()));
         }
 
         if (appointmentDto.getStartTime().after(appointmentDto.getEndTime()))
@@ -255,8 +245,8 @@ public class AppointmentController {
         appointment = appointmentService.saveAppointment(appointment);
 
 
-        String message = String.format(messageSource.getMessage("appointment.created", null,
-                Locale.getDefault()), customProps.getAppointmentsurl()) + appointment.getId();
+        String message = String.format(messageService.getMessage("appointment.created.link"),
+                customProps.getAppointmentsurl()) + appointment.getId();
 
         emailService.sendEmailHttp(emailService.getEmail(doctorEntity, "appointment set", message));
         emailService.sendEmailHttp(emailService.getEmail(patientEntity, "appointment set", message));
@@ -278,17 +268,17 @@ public class AppointmentController {
     {
         Appointment appointmentEntity = appointmentService.getAppointment(appointmentDto.getAppointment_id());
         if(appointmentEntity == null){
-            throw new NotFoundException(String.format(APPOINTMENT_NOT_FOUND_TEMPLATE, appointmentDto.getAppointment_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("appointment.not.found.id"), appointmentDto.getAppointment_id()));
         }
 
         Doctor doctorEntity = doctorService.getDoctor(appointmentDto.getDoctor_id());
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, appointmentDto.getDoctor_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), appointmentDto.getDoctor_id()));
         }
 
         Patient patientEntity = patientService.getPatient(appointmentDto.getPatient_id());
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, appointmentDto.getPatient_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), appointmentDto.getPatient_id()));
         }
 
         if (appointmentEntity.getTookPlace())
@@ -333,17 +323,17 @@ public class AppointmentController {
 
         Appointment appointmentEntity = appointmentService.getAppointment(appointmentDto.getAppointment_id());
         if(appointmentEntity == null){
-            throw new NotFoundException(String.format(APPOINTMENT_NOT_FOUND_TEMPLATE, appointmentDto.getAppointment_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("appointment.not.found.id"), appointmentDto.getAppointment_id()));
         }
 
         Doctor doctorEntity = doctorService.getDoctor(appointmentDto.getDoctor_id());
         if(doctorEntity == null){
-            throw new NotFoundException(String.format(DOCTOR_NOT_FOUND_TEMPLATE, appointmentDto.getDoctor_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("doctor.not.found.id"), appointmentDto.getDoctor_id()));
         }
 
         Patient patientEntity = patientService.getPatient(appointmentDto.getPatient_id());
         if(patientEntity == null){
-            throw new NotFoundException(String.format(PATIENT_NOT_FOUND_TEMPLATE, appointmentDto.getPatient_id()));
+            throw new NotFoundException(String.format(messageService.getMessage("patient.not.found.id"), appointmentDto.getPatient_id()));
         }
 
         AppointmentMapper.MAPPER.toAppointment(doctorEntity, patientEntity, appointmentDto, appointmentEntity);
@@ -361,7 +351,7 @@ public class AppointmentController {
     {
         Appointment appointmentEntity = appointmentService.getAppointment(id);
         if(appointmentEntity == null){
-            throw new NotFoundException(String.format(APPOINTMENT_NOT_FOUND_TEMPLATE, id));
+            throw new NotFoundException(String.format(messageService.getMessage("appointment.not.found.id"), id));
         }
         appointmentService.deleteAppointment(appointmentEntity);
     }
